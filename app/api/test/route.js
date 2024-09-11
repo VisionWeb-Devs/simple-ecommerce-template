@@ -1,13 +1,25 @@
-import client from "@/lib/db";
+import db from "@/lib/db";
+import { collection, getDocs } from "firebase/firestore";
 
 export async function GET(request) {
-  const database = client.db("products");
-  const collection = database.collection("test-collection");
+  try {
+    // Reference a specific collection (replace 'your-collection' with your actual collection name)
+    const querySnapshot = await getDocs(collection(db, "test"));
 
-  // Query the collection (e.g., get all documents)
-  const data = await collection.find({}).toArray();
-  return new Response(JSON.stringify(data[0].message), {
-    status: 200,
-    headers: { "Content-Type": "application/json" },
-  });
+    // Loop through and log each document in the collection
+    const docs = [];
+    querySnapshot.forEach((doc) => {
+      docs.push(doc.data());
+    });
+    return new Response(JSON.stringify(docs[0].message), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    console.error("Error getting collections: ", error);
+    return new Response("Error getting collections", {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 }
