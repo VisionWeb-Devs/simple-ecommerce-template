@@ -6,7 +6,7 @@ import { Footer } from "@/components/Footer";
 const assistant = Assistant({
   subsets: ["latin"],
 });
-
+// push test
 export const metadata = {
   title: "VisionWeb Devs",
   description: "A simple ecommerce template",
