@@ -12,7 +12,6 @@ export default function Home() {
       });
       const message = await response.json();
       if (message) {
-        console.log(message);
         setLoading(false);
       }
     }
