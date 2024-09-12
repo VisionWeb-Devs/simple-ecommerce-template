@@ -1,17 +1,20 @@
 import db from "@/lib/db";
+import { listFolders } from "@/lib/googleDrive";
 import { collection, getDocs } from "firebase/firestore";
 
 export async function GET(request) {
   try {
-    // Reference a specific collection (replace 'your-collection' with your actual collection name)
-    const querySnapshot = await getDocs(collection(db, "test"));
+    // // Reference a specific collection (replace 'your-collection' with your actual collection name)
+    // const querySnapshot = await getDocs(collection(db, "test"));
 
-    // Loop through and log each document in the collection
-    const docs = [];
-    querySnapshot.forEach((doc) => {
-      docs.push(doc.data());
-    });
-    return new Response(JSON.stringify(docs[0].message), {
+    // // Loop through and log each document in the collection
+    // const docs = [];
+    // querySnapshot.forEach((doc) => {
+    //   docs.push(doc.data());
+    // });
+    const files = await listFolders();
+
+    return new Response(JSON.stringify(files), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });

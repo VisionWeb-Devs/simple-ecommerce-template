@@ -12,7 +12,7 @@ export default function Home() {
       });
       const message = await response.json();
       if (message) {
-        alert(message);
+        console.log(message);
         setLoading(false);
       }
     }
