@@ -16,9 +16,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={assistant.className}>
       <body>
-        <Header />
+        {/* <Header /> */}
         {children}
-        <Footer />
+        {/* <Footer /> */}
       </body>
     </html>
   );

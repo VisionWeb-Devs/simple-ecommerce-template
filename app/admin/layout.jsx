@@ -4,9 +4,9 @@ import AdminNavigation from "@/components/admin/AdminNavigation";
 
 export default function AdminLayout({ children }) {
   return (
-    <div>
+    <div className="flex w-full h-screen">
       <AdminNavigation />
-      <div>
+      <div className="flex w-full h-screen flex-col">
         <AdminHeader />
         {children}
         <AdminFooter />
