@@ -9,7 +9,7 @@ import {
   Menu,
 } from "lucide-react";
 import logo from "./../../assets/main_logo.png";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const CategoryList = ({ categories }) => {
   return (
@@ -17,7 +17,8 @@ const CategoryList = ({ categories }) => {
       {categories.map((category, index) => (
         <li
           key={index}
-          className="flex justify-between items-center px-4 py-2 hover:bg-gray-100 transition-all duration-500 select-none cursor-pointer"
+          style={{ transitionDelay: `${index * 100}ms` }}
+          className="flex justify-between items-center px-4 py-2 hover:bg-gray-100 transition-opacity duration-500 animate-fadeIn select-none cursor-pointer "
         >
           <span>{category.name}</span>
           <span className="bg-gray-200 text-gray-700 px-2 py-1 rounded-md text-sm">
@@ -35,17 +36,19 @@ const SidebarItem = ({ icon, text, link }) => {
   const activeLink = "bg-main text-white";
   const inactiveLink =
     "text-gray-600 hover:bg-gray-100 hover:text-gray-900 border-[1px] border-main";
-
+  const router = useRouter();
   return (
-    <a
-      href={link}
+    <div
+      onClick={() => {
+        router.push(link);
+      }}
       className={`flex items-center mx-[24px] px-4 py-3 font-semibold text-[15px] ${
         isActive ? activeLink : inactiveLink
       }`}
     >
       {icon}
       <span className="ml-3">{text}</span>
-    </a>
+    </div>
   );
 };
 
@@ -68,12 +71,12 @@ const AdminNavigation = () => {
   function handleToggleMenu() {
     setIsMenuOpen(!isMenuOpen);
   }
-
+  console.log("hello");
   return (
     <div className="fixed ">
       <button
         onClick={handleToggleMenu}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white rounded-md shadow-md"
+        className="lg:hidden fixed top-6 left-4 z-50 p-2 bg-white rounded-md shadow-md"
       >
         <Menu size={24} />
       </button>
