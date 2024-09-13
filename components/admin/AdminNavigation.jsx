@@ -73,17 +73,17 @@ const AdminNavigation = () => {
   }
   console.log("hello");
   return (
-    <div className="fixed ">
+    <div className=" ">
       <button
         onClick={handleToggleMenu}
-        className="lg:hidden fixed top-6 left-4 z-50 p-2 bg-white rounded-md shadow-md"
+        className="lg:hidden top-6 left-4  p-2 bg-white rounded-md shadow-md"
       >
         <Menu size={24} />
       </button>
       <div
         className={`w-72 lg:w-[250px] h-screen bg-white border-r border-gray-200 overflow-y-auto transition-transform duration-300 ease-in-out ${
           isMenuOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:translate-x-0 fixed top-0 left-0 `}
+        } lg:translate-x-0  top-0 left-0 `}
       >
         <div className="px-4 pt-4 flex justify-center items-center w-[60%] mx-auto">
           <img
@@ -92,6 +92,7 @@ const AdminNavigation = () => {
             className="mb-8 object-cover select-none "
           />
         </div>
+
         <nav className="space-y-3 select-none">
           <SidebarItem
             icon={<Home size={20} />}
@@ -132,7 +133,7 @@ const AdminNavigation = () => {
       </div>
       {isMenuOpen && (
         <div
-          className="fixed  bg-black bg-opacity-50 z-30 lg:hidden"
+          className="  bg-black bg-opacity-50 z-30 lg:hidden"
           onClick={handleToggleMenu}
         ></div>
       )}

@@ -1,4 +1,3 @@
-import { Copyright } from "lucide-react";
 import React from "react";
 
 const AdminFooter = () => {

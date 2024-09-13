@@ -1,29 +1,37 @@
+import { auth } from "@/lib/firebase";
 import { KeyRound, LogOut } from "lucide-react";
 import React from "react";
 
 const AdminHeader = () => {
+  const handlesignout = async () => {
+    await auth.signOut();
+    window.href = "/login";
+  };
   return (
-    <div className="flex w-full h-[100px] justify-end items-center px-[60px] gap-7 uppercase text-lg border-b-[1px] select-none shadow-bottom">
+    <div className="flex w-full h-[100px] justify-end items-center px-[60px] gap-7 text-lg border-b-[1px] select-none shadow-bottom uppercase">
       <a
         href="#"
-        class="group text-black justify-center items-center transition font-semibold duration-300"
+        className="group text-black justify-center items-center transition font-semibold duration-300"
       >
         <span className="flex items-center justify-center gap-3">
           Change password
           <KeyRound className="cursor-pointer" />
         </span>
 
-        <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-black"></span>
+        <span className="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-black"></span>
       </a>
       <a
         href="#"
-        class="group text-black  justify-center items-center transition font-semibold duration-300"
+        className="group text-black  justify-center items-center transition font-semibold duration-300"
       >
-        <span className="flex items-center justify-center gap-3">
+        <button
+          className="flex items-center justify-center gap-3 uppercase"
+          onClick={handlesignout}
+        >
           Log out <LogOut />
-        </span>
+        </button>
 
-        <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-black"></span>
+        <span className="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-black"></span>
       </a>
     </div>
   );
