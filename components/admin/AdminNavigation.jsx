@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import logo from "./../../assets/main_logo.png";
 import { usePathname, useRouter } from "next/navigation";
+import Image from "next/image";
 
 const CategoryList = ({ categories }) => {
   return (
@@ -85,7 +86,7 @@ const AdminNavigation = () => {
         } lg:translate-x-0 fixed top-0 left-0 `}
       >
         <div className="px-4 pt-4 flex justify-center items-center w-[60%] mx-auto">
-          <img src={logo.src} alt="Site Logo" className="mb-8 object-cover" />
+          <Image src={logo} alt="Site Logo" className="mb-8 object-cover" />
         </div>
         <nav className="space-y-3">
           <SidebarItem

@@ -4,7 +4,7 @@ import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-const page = () => {
+const Page = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -62,12 +62,6 @@ const page = () => {
     }
 
     setBtnLoading(false);
-    // const data = await response.json();
-
-    // if (data.error) {
-    //   setError(data.error.code.replace("auth/", ""));
-    //   return;
-    // }
   };
   return (
     <div className="w-screen h-screen flex items-center justify-center text-main px-[48px] xl:px-0">
@@ -111,7 +105,7 @@ const page = () => {
         </button>
         <div className="text-[14px] xl:text-[16px] font-semibold">
           <span className="opacity-75">
-            By clicking 'Log In' you agree to our website
+            By clicking &apos;Log In&apos; you agree to our website
           </span>{" "}
           <span className="underline">Terms & Conditions.</span>
         </div>
@@ -120,4 +114,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
