@@ -13,7 +13,7 @@ import { usePathname, useRouter } from "next/navigation";
 
 const CategoryList = ({ categories }) => {
   return (
-    <ul className="flex flex-col w-full">
+    <ul className="flex flex-col w-full tracking-wide">
       {categories.map((category, index) => (
         <li
           key={index}
@@ -86,9 +86,13 @@ const AdminNavigation = () => {
         } lg:translate-x-0 fixed top-0 left-0 `}
       >
         <div className="px-4 pt-4 flex justify-center items-center w-[60%] mx-auto">
-          <img src={logo.src} alt="Site Logo" className="mb-8 object-cover" />
+          <img
+            src={logo.src}
+            alt="Site Logo"
+            className="mb-8 object-cover select-none "
+          />
         </div>
-        <nav className="space-y-3">
+        <nav className="space-y-3 select-none">
           <SidebarItem
             icon={<Home size={20} />}
             text="DASHBOARD"
