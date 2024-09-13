@@ -12,9 +12,11 @@
     "cookie": "^0.6.0",
     "firebase": "^10.13.1",
     "googleapis": "^144.0.0",
+    "lucide-react": "^0.441.0",
     "next": "14.2.9",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "react-lucid": "^0.0.1"
   },
   "devDependencies": {
     "eslint": "^8",

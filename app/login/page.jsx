@@ -50,9 +50,6 @@ const page = () => {
       const user = userCredential.user;
       if (user) {
         setSuccess("Login successful");
-        setTimeout(() => {
-          router.push("/admin");
-        }, 1000);
       }
     } catch (error) {
       if (error.code === "auth/invalid-email") {
@@ -73,11 +70,11 @@ const page = () => {
     // }
   };
   return (
-    <div className="w-screen h-screen flex items-center justify-center text-main">
-      <div className="flex flex-col gap-[24px] max-w-[500px]">
+    <div className="w-screen h-screen flex items-center justify-center text-main px-[48px] xl:px-0">
+      <div className="flex flex-col gap-[14px] xl:gap-[24px] xl:max-w-[500px]">
         <div className="font-semibold">
-          <div className="text-[48px]">Login</div>
-          <div className="text-[16px] opacity-75">
+          <div className="text-[32px] xl:text-[48px]">Login</div>
+          <div className="text-[14px] xl:text-[16px] opacity-75">
             forgot password? contact us +213799902523
           </div>
         </div>
@@ -112,7 +109,7 @@ const page = () => {
         >
           LOGIN
         </button>
-        <div className="text-[16px] font-semibold">
+        <div className="text-[14px] xl:text-[16px] font-semibold">
           <span className="opacity-75">
             By clicking 'Log In' you agree to our website
           </span>{" "}
