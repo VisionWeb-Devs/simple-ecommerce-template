@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import { MoreHorizontal } from "lucide-react";
 
 const orders = [
   {
@@ -217,6 +216,10 @@ const orders = [
 
 const OrdersList = () => {
   const [selectedStatus, setSelectedStatus] = useState("All");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [ordersPerPage] = useState(15);
 
   const statusColors = {
     Delivered: "text-green-500",
@@ -224,9 +227,6 @@ const OrdersList = () => {
     Processing: "text-blue-500",
     Returned: "text-red-500",
   };
-
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
 
   const formatDate = (date) => {
     if (!date) return "";
@@ -238,6 +238,19 @@ const OrdersList = () => {
     selectedStatus === "All"
       ? orders
       : orders.filter((order) => order.status === selectedStatus);
+
+  const indexOfLastOrder = currentPage * ordersPerPage;
+  console.log("indexOfLastOrder", indexOfLastOrder);
+  const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
+  console.log("indexOfFirstOrder", indexOfFirstOrder);
+
+  const currentOrders = filteredOrders.slice(
+    indexOfFirstOrder,
+    indexOfLastOrder
+  );
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  console.log("filteredOrders.length ", filteredOrders.length);
+  const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
 
   return (
     <div className="p-4 bg-gray-50 min-h-screen">
@@ -267,7 +280,6 @@ const OrdersList = () => {
                   style={{ appearance: "none" }}
                 />
               </div>
-
               <div className="text-xl font-semibold">
                 {startDate && endDate
                   ? `${formatDate(startDate)} - ${formatDate(endDate)}`
@@ -310,23 +322,23 @@ const OrdersList = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredOrders.map((order, index) => (
-              <tr key={index} className="border-b hover:bg-gray-50">
-                <td>
+            {currentOrders.map((order, index) => (
+              <tr key={index} className="border-b hover:bg-gray-50 ">
+                <td className="py-2">
                   <input type="checkbox" />
                 </td>
-                <td>Lorem Ipsum</td>
-                <td>{order.id}</td>
-                <td>{order.date}</td>
+                <td className="py-2">Lorem Ipsum</td>
+                <td className="py-2">{order.id}</td>
+                <td className="py-2">{order.date}</td>
                 <td className="flex items-center">{order.customer}</td>
-                <td>
+                <td className="py-2">
                   <span
                     className={`${statusColors[order.status]} font-semibold`}
                   >
                     {order.status}
                   </span>
                 </td>
-                <td>{order.amount}</td>
+                <td className="py-2">{order.amount}</td>
               </tr>
             ))}
           </tbody>
@@ -334,12 +346,25 @@ const OrdersList = () => {
       </div>
 
       <div className="mt-4 flex items-center justify-end space-x-2">
-        <button className="px-3 py-1 border  bg-gray-200">1</button>
-        <button className="px-3 py-1 border ">2</button>
-        <button className="px-3 py-1 border ">3</button>
-        <button className="px-3 py-1 border ">4</button>
-        <span>...</span>
-        <button className="px-3 py-1 border ">Next</button>
+        {[...Array(totalPages).keys()].map((number) => (
+          <button
+            key={number + 1}
+            onClick={() => paginate(number + 1)}
+            className={`px-3 py-1 border ${
+              currentPage === number + 1 ? "bg-gray-200" : ""
+            }`}
+          >
+            {number + 1}
+          </button>
+        ))}
+        {currentPage < totalPages && (
+          <button
+            onClick={() => paginate(currentPage + 1)}
+            className="px-3 py-1 border"
+          >
+            Next
+          </button>
+        )}
       </div>
     </div>
   );

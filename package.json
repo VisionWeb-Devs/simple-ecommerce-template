@@ -9,6 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "add": "^2.0.6",
+    "avatar": "^0.1.0",
+    "card": "^2.5.4",
     "cookie": "^0.6.0",
     "firebase": "^10.13.1",
     "googleapis": "^144.0.0",
@@ -16,7 +19,10 @@
     "next": "14.2.9",
     "react": "^18",
     "react-dom": "^18",
-    "react-lucid": "^0.0.1"
+    "react-lucid": "^0.0.1",
+    "recharts": "^2.12.7",
+    "shadcn-ui": "^0.9.0",
+    "table": "^6.8.2"
   },
   "devDependencies": {
     "eslint": "^8",
