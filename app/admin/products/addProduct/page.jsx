@@ -132,7 +132,6 @@ const Page = () => {
     e.preventDefault();
     const formData = new FormData(e.target);
     await add_product(formData).then((res) => {
-      console.log(res);
       if (res.status == "success") {
         setUploading(true);
       } else {
@@ -425,7 +424,7 @@ const Page = () => {
                   onChange={handleImageChange}
                 />
                 {imageURL && (
-                  <Image
+                  <img
                     src={imageURL}
                     alt="product"
                     className="min-w-[300px] min-h-[300px] max-w-full max-h-[500px]"
@@ -439,7 +438,7 @@ const Page = () => {
                     className="flex justify-between items-center px-[16px] py-[8px] bg-gray-50 rounded-[8px] gap-[8px]"
                   >
                     <div className="w-[140px] h-[100px] overflow-clip rounded-[8px] border border-gray-50">
-                      <Image
+                      <img
                         src={URL.createObjectURL(image.file)}
                         alt="product"
                         className="object-cover w-full h-full"
