@@ -20,12 +20,8 @@ export default function Home() {
   // if (loading) return <div>Loading...</div>;
   return (
     <div>
-      {!loading && (
-        <>
-          <TopSelling />
-          <Categories />
-        </>
-      )}
+      <TopSelling />
+      <Categories />
     </div>
   );
 }
