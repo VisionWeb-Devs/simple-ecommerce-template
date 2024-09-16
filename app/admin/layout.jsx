@@ -27,9 +27,12 @@ export default function AdminLayout({ children }) {
     return <div>Loading...</div>;
   }
   return (
-    <div className="xl:flex">
-      <AdminNavigation />
-      <div className="xl:flex-1">
+    <div className="lg:flex ">
+      <div className="flex w-[250px] h-0">
+        <AdminNavigation />
+      </div>
+
+      <div className="lg:flex-1  ">
         <AdminHeader />
         {children}
         <AdminFooter />

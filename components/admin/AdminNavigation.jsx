@@ -10,11 +10,10 @@ import {
 } from "lucide-react";
 import logo from "./../../assets/main_logo.png";
 import { usePathname, useRouter } from "next/navigation";
-import Image from "next/image";
 
 const CategoryList = ({ categories }) => {
   return (
-    <ul className="flex flex-col w-full">
+    <ul className="flex flex-col w-full tracking-wide">
       {categories.map((category, index) => (
         <li
           key={index}
@@ -43,7 +42,7 @@ const SidebarItem = ({ icon, text, link }) => {
       onClick={() => {
         router.push(link);
       }}
-      className={`flex items-center mx-[24px] px-4 py-3 font-semibold text-[15px] cursor-pointer ${
+      className={`flex items-center mx-[24px] px-4 py-3 font-semibold text-[15px] ${
         isActive ? activeLink : inactiveLink
       }`}
     >
@@ -72,11 +71,12 @@ const AdminNavigation = () => {
   function handleToggleMenu() {
     setIsMenuOpen(!isMenuOpen);
   }
+  console.log("hello");
   return (
-    <div className="">
+    <div className=" ">
       <button
         onClick={handleToggleMenu}
-        className="lg:hidden top-6 left-4 z-50 p-2 bg-white rounded-md shadow-md"
+        className="lg:hidden top-6 left-4  p-2 bg-white rounded-md shadow-md"
       >
         <Menu size={24} />
       </button>
@@ -86,9 +86,14 @@ const AdminNavigation = () => {
         } lg:translate-x-0  top-0 left-0 `}
       >
         <div className="px-4 pt-4 flex justify-center items-center w-[60%] mx-auto">
-          <Image src={logo} alt="Site Logo" className="mb-8 object-cover" />
+          <img
+            src={logo.src}
+            alt="Site Logo"
+            className="mb-8 object-cover select-none "
+          />
         </div>
-        <nav className="space-y-3">
+
+        <nav className="space-y-3 select-none">
           <SidebarItem
             icon={<Home size={20} />}
             text="DASHBOARD"

@@ -7,7 +7,7 @@ const AdminHeader = () => {
     window.href = "/login";
   };
   return (
-    <div className="flex w-full h-[100px] justify-end items-center px-[60px] gap-7 uppercase text-lg border-b select-none shadow-bottom">
+    <div className="flex w-full h-[100px] justify-end items-center px-[60px] gap-7 text-lg border-b-[1px] select-none shadow-bottom uppercase">
       <a
         href="#"
         className="text-black justify-center items-center transition font-semibold duration-300"
@@ -24,7 +24,7 @@ const AdminHeader = () => {
         className="group text-black  justify-center items-center transition font-semibold duration-300"
       >
         <button
-          className="flex items-center justify-center gap-3"
+          className="flex items-center justify-center gap-3 uppercase"
           onClick={handlesignout}
         >
           Log out <LogOut />
