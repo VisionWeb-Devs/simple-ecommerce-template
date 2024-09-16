@@ -1,6 +1,5 @@
 import { auth } from "@/lib/firebase";
 import { KeyRound, LogOut } from "lucide-react";
-import React from "react";
 
 const AdminHeader = () => {
   const handlesignout = async () => {
@@ -8,10 +7,10 @@ const AdminHeader = () => {
     window.href = "/login";
   };
   return (
-    <div className="flex w-full h-[100px] justify-end items-center px-[60px] gap-7 uppercase text-lg border-b-[1px] select-none shadow-bottom">
+    <div className="flex w-full h-[100px] justify-end items-center px-[60px] gap-7 uppercase text-lg border-b select-none shadow-bottom">
       <a
         href="#"
-        className="group text-black justify-center items-center transition font-semibold duration-300"
+        className="text-black justify-center items-center transition font-semibold duration-300"
       >
         <span className="flex items-center justify-center gap-3">
           Change password

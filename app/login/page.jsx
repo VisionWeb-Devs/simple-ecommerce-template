@@ -58,7 +58,6 @@ const Page = () => {
       if (error.code === "auth/invalid-credential") {
         setError("Invalid credentials");
       }
-      console.error(error);
     }
 
     setBtnLoading(false);
@@ -97,7 +96,7 @@ const Page = () => {
           </div>
         )}
         <button
-          className="py-[10px] px-[16px] bg-main text-white text-[18px] font-medium text-left"
+          className="py-[10px] px-[16px] bg-main text-white text-[18px] font-medium text-left disabled:opacity-75 disabled:cursor-not-allowed"
           onClick={handleSubmit}
           disabled={btnLoading}
         >
