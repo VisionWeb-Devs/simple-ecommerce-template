@@ -8,6 +8,9 @@ import {
 } from "@/lib/googleDriveAdmin";
 import { LucideX } from "lucide-react";
 import Image from "next/image";
+import { nanoid } from "nanoid";
+import { redirect } from "next/dist/server/api-utils";
+import { useRouter } from "next/navigation";
 
 const shirtsOptions = [
   { value: "XS", label: "XS" },
@@ -25,7 +28,9 @@ const pantsOptions = [
 ];
 
 const Page = () => {
-  const [uploading, setUploading] = useState(false);
+  const router = useRouter();
+  const [productId, setProductId] = useState(nanoid());
+  const [confirmProduct, setConfirmProduct] = useState(false);
   const [images, setImages] = useState([]);
   const [imageURL, setImageURL] = React.useState("");
   const [productUrl, setProductUrl] = React.useState("");
@@ -73,6 +78,8 @@ const Page = () => {
         formData.append(image_name, file);
       });
       formData.append("product_url", productUrl);
+      formData.append("productID", productId);
+
       const response = await upload_file(formData);
       return { files, response };
     };
@@ -96,6 +103,7 @@ const Page = () => {
       formData.append("variation", variation);
       formData.append("index", index);
       formData.append("product_url", productUrl);
+      formData.append("productID", productId);
       const response = await change_image_variation(formData);
       return { file, response };
     };
@@ -130,13 +138,17 @@ const Page = () => {
 
   const handleAddProduct = async (e) => {
     e.preventDefault();
+    setConfirmProduct(true);
     const formData = new FormData(e.target);
+    formData.set("product_id", productId);
     await add_product(formData).then((res) => {
       if (res.status == "success") {
-        setUploading(true);
+        alert("Product added successfully");
+        router.push("/admin/products");
       } else {
         alert(res.error);
       }
+      setConfirmProduct(false);
     });
   };
   return (
@@ -160,7 +172,6 @@ const Page = () => {
               type="text"
               id="name"
               name="name"
-              readOnly={uploading}
               placeholder={"Product name here"}
               className="border-[1px] border-[#E5E5E5] rounded-[4px] px-[16px] py-[8px] text-[16px]"
               onChange={(e) => setProductUrl(createSlug(e.target.value))}
@@ -197,7 +208,7 @@ const Page = () => {
             </label>
             {variations.map((variation, index) => (
               <div
-                key={variation.name + index}
+                key={"variation-" + index}
                 className="flex flex-col gap-[8px]"
               >
                 <div className="flex items-center gap-[8px]" key={index}>
@@ -334,7 +345,13 @@ const Page = () => {
                       i === index
                         ? {
                             ...v,
-                            sizes: [...v.sizes, { size: "", quantity: "" }],
+                            sizes: [
+                              ...v.sizes,
+                              v.sizes[v.sizes.length - 1] || {
+                                size: "",
+                                quantity: "",
+                              },
+                            ],
                           }
                         : v
                     );
@@ -372,7 +389,6 @@ const Page = () => {
               type="text"
               id="price"
               name="price"
-              readOnly={uploading}
               placeholder={"Product price here"}
               className="border-[1px] border-[#E5E5E5] rounded-[4px] px-[16px] py-[8px] text-[16px]"
             />
@@ -397,89 +413,83 @@ const Page = () => {
           <button
             type="submit"
             className="bg-main text-white w-fit px-[16px] py-[8px] disabled:opacity-75 disabled:cursor-not-allowed"
+            disabled={
+              confirmProduct ||
+              images.some(
+                (image) =>
+                  image.response == "Uploading" || image.response == "Changing"
+              )
+            }
           >
             Confirm product
           </button>
         </form>
         <div className="flex-1">
-          {!uploading && (
-            <div>
-              <div className="text-main font-semibold text-[20px]">
-                Add product data before uploading the images.
-              </div>
-            </div>
-          )}
-          {uploading && (
-            <form
-              className="relative min-w-[300px] min-h-[300px] max-w-full "
-              encType="multipart/form-data"
-            >
-              <div className="min-w-[300px] min-h-[300px] w-full max-h-[500px] bg-gray-50 relative">
-                <input
-                  type="file"
-                  accept="image/*"
-                  name="file"
-                  multiple
-                  className="cursor-pointer w-full h-full absolute top-0 left-0 opacity-0"
-                  onChange={handleImageChange}
+          <form
+            className="relative min-w-[300px] min-h-[300px] max-w-full "
+            encType="multipart/form-data"
+          >
+            <div className="min-w-[300px] min-h-[300px] w-full max-h-[500px] bg-gray-50 relative">
+              <input
+                type="file"
+                accept="image/*"
+                name="file"
+                multiple
+                className="cursor-pointer w-full h-full absolute top-0 left-0 opacity-0"
+                onChange={handleImageChange}
+              />
+              {imageURL && (
+                <img
+                  src={imageURL}
+                  alt="product"
+                  className="min-w-[300px] min-h-[300px] max-w-full max-h-[500px]"
                 />
-                {imageURL && (
-                  <img
-                    src={imageURL}
-                    alt="product"
-                    className="min-w-[300px] min-h-[300px] max-w-full max-h-[500px]"
-                  />
-                )}
-              </div>
-              <div className="flex flex-col gap-[8px] mt-[24px] h-full">
-                {images.map((image, index) => (
-                  <div
-                    key={image.file.name}
-                    className="flex justify-between items-center px-[16px] py-[8px] bg-gray-50 rounded-[8px] gap-[8px]"
-                  >
-                    <div className="w-[140px] h-[100px] overflow-clip rounded-[8px] border border-gray-50">
-                      <img
-                        src={URL.createObjectURL(image.file)}
-                        alt="product"
-                        className="object-cover w-full h-full"
-                      />
-                    </div>
-                    <div className="max-w-[200px] overflow-auto hide-scrollbar">
-                      {image.file.name}
-                    </div>
-                    <select
-                      name="variation"
-                      className="border-[1px] border-main rounded-[4px] px-[16px] py-[8px] text-[16px]"
-                      onChange={(e) => {
-                        handleVariationChange(
-                          image.file,
-                          index,
-                          e.target.value
-                        );
-                      }}
-                    >
-                      {/* {(variations.length === 0 || !variations[0].name) && ( */}
-                      <option value="">Select variation</option>
-                      {/* )} */}
-                      {variations?.map((variation) => {
-                        if (!variation.name) return null;
-                        return (
-                          <option
-                            key={variation.name}
-                            className="border-[1px] rounded-[4px] px-[16px] py-[8px] text-[16px]"
-                            value={variation.name}
-                          >
-                            {variation.name}
-                          </option>
-                        );
-                      })}
-                    </select>
-                    <div>{image.response}</div>
+              )}
+            </div>
+            <div className="flex flex-col gap-[8px] mt-[24px] h-full">
+              {images.map((image, index) => (
+                <div
+                  key={image.file.name}
+                  className="flex justify-between items-center px-[16px] py-[8px] bg-gray-50 rounded-[8px] gap-[8px]"
+                >
+                  <div className="w-[140px] h-[100px] overflow-clip rounded-[8px] border border-gray-50">
+                    <img
+                      src={URL.createObjectURL(image.file)}
+                      alt="product"
+                      className="object-cover w-full h-full"
+                    />
                   </div>
-                ))}
-              </div>
-            </form>
-          )}
+                  <div className="max-w-[200px] overflow-auto hide-scrollbar">
+                    {image.file.name}
+                  </div>
+                  <select
+                    name="variation"
+                    className="border-[1px] border-main rounded-[4px] px-[16px] py-[8px] text-[16px]"
+                    onChange={(e) => {
+                      handleVariationChange(image.file, index, e.target.value);
+                    }}
+                  >
+                    {/* {(variations.length === 0 || !variations[0].name) && ( */}
+                    <option value="">Select variation</option>
+                    {/* )} */}
+                    {variations?.map((variation) => {
+                      if (!variation.name) return null;
+                      return (
+                        <option
+                          key={variation.name}
+                          className="border-[1px] rounded-[4px] px-[16px] py-[8px] text-[16px]"
+                          value={variation.name}
+                        >
+                          {variation.name}
+                        </option>
+                      );
+                    })}
+                  </select>
+                  <div>{image.response}</div>
+                </div>
+              ))}
+            </div>
+          </form>
         </div>
       </div>
     </div>
