@@ -144,7 +144,7 @@ const Page = () => {
     await add_product(formData).then((res) => {
       if (res.status == "success") {
         alert("Product added successfully");
-        router.push("/admin/products");
+        // router.push("/admin/products");
       } else {
         alert(res.error);
       }
