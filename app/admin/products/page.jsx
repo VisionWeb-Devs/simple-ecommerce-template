@@ -23,9 +23,7 @@ const ProductCard = ({
           <p className="font-bold mt-2 text-sm sm:text-base">{price}DA</p>
         </div>
       </div>
-      <button className="text-gray-500 hover:text-gray-700">
-        {available ? "Available" : "Not Available"}
-      </button>
+      <button className="text-gray-500 hover:text-gray-700">Edit</button>
     </div>
     <div>
       {/* <h4 className="font-semibold mb-2 text-sm sm:text-base">Summary</h4> */}
@@ -77,9 +75,11 @@ const ProductGrid = async () => {
         </a>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 w-full">
-        {products.map((product, index) => (
-          <ProductCard key={index} product={product} />
-        ))}
+        {products &&
+          products.map((product, index) => (
+            <ProductCard key={index} product={product} />
+          ))}
+        {!products && <p>Loading...</p>}
       </div>
     </div>
   );
