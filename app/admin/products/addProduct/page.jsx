@@ -1,16 +1,17 @@
 "use client";
 import Input from "@/components/admin/Input";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   add_product,
   change_image_variation,
+  getImages,
   upload_file,
 } from "@/lib/googleDriveAdmin";
 import { LucideX } from "lucide-react";
 import Image from "next/image";
 import { nanoid } from "nanoid";
 import { redirect } from "next/dist/server/api-utils";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const shirtsOptions = [
   { value: "XS", label: "XS" },
@@ -26,37 +27,91 @@ const pantsOptions = [
   { value: "34", label: "34" },
   { value: "36", label: "36" },
 ];
+const createSlug = (productName) => {
+  return productName
+    .toLowerCase()
+    .replace(/[\s-]+/g, "-")
+    .replace(/[^\w-]+/g, "")
+    .replace(/-+/g, "-")
+    .replace(/-$/, "");
+};
+const format_variation_name = (variation_name) => {
+  return variation_name
+    .toLowerCase()
+    .replace(/[\s-]+/g, "_")
+    .replace(/[^\w_]+/g, "")
+    .replace(/_+/g, "_")
+    .replace(/_$/, "");
+};
 
 const Page = () => {
+  const productURL = useSearchParams().get("productURL");
   const router = useRouter();
-  const [productId, setProductId] = useState(nanoid());
+  useEffect(() => {
+    if (productURL) {
+      const productData = fetch("/api/productData", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ productURL: productURL }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.product) {
+            setProductData((prev) => ({
+              ...prev,
+              productID: data.product.productID,
+              productName: data.product.name,
+              description: data.product.description,
+              price: data.product.price,
+              productURL: data.product.productURL,
+              available: data.product.available,
+              variations: data.product.variations,
+            }));
+
+            getImages(data.product.productID).then((images) => {
+              if (images.length === 0) return;
+              setImageURL(images.main_image.webContentLink);
+              console.log(images);
+              setImages(
+                images.images.map((image, index) => ({
+                  file: image,
+                  response: "image uploaded",
+                }))
+              );
+            });
+          } else {
+            alert(data.message);
+          }
+        });
+    }
+  }, [productURL]);
+
+  const [productData, setProductData] = useState({
+    productID: nanoid(),
+    productName: "",
+    description: "",
+    productURL: "",
+    price: 0.0,
+    available: false,
+    variations: [
+      {
+        variationName: "",
+        productType: "",
+        sizes: [{ size: "", quantity: "" }],
+      },
+    ],
+  });
   const [confirmProduct, setConfirmProduct] = useState(false);
   const [images, setImages] = useState([]);
   const [imageURL, setImageURL] = React.useState("");
-  const [productUrl, setProductUrl] = React.useState("");
   const [selectOptions, setSelectOptions] = React.useState(shirtsOptions);
-  const [variations, setVariations] = React.useState([]);
-  const [productType, setProductType] = React.useState("Shirts");
-  const createSlug = (productName) => {
-    return productName
-      .toLowerCase()
-      .replace(/[\s-]+/g, "-")
-      .replace(/[^\w-]+/g, "")
-      .replace(/-+/g, "-")
-      .replace(/-$/, "");
-  };
-  const format_variation_name = (variation_name) => {
-    return variation_name
-      .toLowerCase()
-      .replace(/[\s-]+/g, "_")
-      .replace(/[^\w_]+/g, "")
-      .replace(/_+/g, "_")
-      .replace(/_$/, "");
-  };
+
   const handleImageChange = async (e) => {
     if (e.target.files.length === 0) return;
 
-    const selectedFiles = Array.from(e.target.files); // Convert FileList to an array
+    const selectedFiles = Array.from(e.target.files);
     const uniqueFiles = selectedFiles.filter(
       (file) => !images.some((prevFile) => prevFile.file.name === file.name)
     );
@@ -77,8 +132,8 @@ const Page = () => {
         formData.set("images", JSON.stringify(images_array));
         formData.append(image_name, file);
       });
-      formData.append("product_url", productUrl);
-      formData.append("productID", productId);
+      formData.append("product_url", productData.productURL);
+      formData.append("productID", productData.productID);
 
       const response = await upload_file(formData);
       return { files, response };
@@ -102,8 +157,8 @@ const Page = () => {
       const formData = new FormData();
       formData.append("variation", variation);
       formData.append("index", index);
-      formData.append("product_url", productUrl);
-      formData.append("productID", productId);
+      formData.append("product_url", productData.productURL);
+      formData.append("productID", productData.productID);
       const response = await change_image_variation(formData);
       return { file, response };
     };
@@ -128,7 +183,8 @@ const Page = () => {
   };
   const handleProductTypeChange = (e) => {
     const selectedCategory = e.target.value;
-    setProductType(selectedCategory);
+    // setProductType(selectedCategory);
+    // setProductData((prev) => ({ ...prev, productType: selectedCategory }));
     if (selectedCategory === "Shirts") {
       setSelectOptions(shirtsOptions);
     } else if (selectedCategory === "Pants") {
@@ -140,17 +196,25 @@ const Page = () => {
     e.preventDefault();
     setConfirmProduct(true);
     const formData = new FormData(e.target);
-    formData.set("product_id", productId);
+    formData.set("product_id", productData.productID);
     await add_product(formData).then((res) => {
       if (res.status == "success") {
         alert("Product added successfully");
-        // router.push("/admin/products");
+        if (productURL !== productData.productURL) {
+          router.push(
+            `/admin/products/addProduct?productURL=${productData.productURL}`
+          );
+        }
       } else {
         alert(res.error);
       }
       setConfirmProduct(false);
     });
   };
+  if (productURL && productData.productURL !== productURL) {
+    return <div>Loading...</div>;
+  }
+  console.log(images);
   return (
     <div className="py-[24px] px-[40px] w-full text-main">
       <div className="flex flex-col gap-[4px] font-semibold">
@@ -174,7 +238,14 @@ const Page = () => {
               name="name"
               placeholder={"Product name here"}
               className="border-[1px] border-[#E5E5E5] rounded-[4px] px-[16px] py-[8px] text-[16px]"
-              onChange={(e) => setProductUrl(createSlug(e.target.value))}
+              value={productData.productName}
+              onChange={(e) => {
+                setProductData((prev) => ({
+                  ...prev,
+                  productName: e.target.value,
+                  productURL: createSlug(e.target.value),
+                }));
+              }}
             />
           </div>
           <div className="flex flex-col gap-[10px]">
@@ -188,7 +259,7 @@ const Page = () => {
               name="productURL"
               placeholder="This is how the URL for the product will look like"
               className="border-[1px] border-[#E5E5E5] rounded-[4px] px-[16px] py-[8px] text-[16px]"
-              value={productUrl}
+              value={productData.productURL}
             />
           </div>
           <div className="flex flex-col gap-[10px]">
@@ -200,13 +271,20 @@ const Page = () => {
               name="description"
               placeholder="Product description here"
               className="border-[1px] border-[#E5E5E5] rounded-[4px] px-[16px] py-[8px] text-[16px] min-h-[42px] max-h-[500px]"
+              value={productData.description}
+              onChange={(e) => {
+                setProductData((prev) => ({
+                  ...prev,
+                  description: e.target.value,
+                }));
+              }}
             />
           </div>
           <div className="flex flex-col gap-[8px] w-full">
             <label className="text-[20px] font-semibold">
               Product Variations
             </label>
-            {variations.map((variation, index) => (
+            {productData.variations.map((variation, index) => (
               <div
                 key={"variation-" + index}
                 className="flex flex-col gap-[8px]"
@@ -214,13 +292,20 @@ const Page = () => {
                 <div className="flex items-center gap-[8px]" key={index}>
                   <LucideX
                     size={24}
-                    color={variations.length === 1 ? "#E5E5E5" : "#000000"}
+                    color={
+                      productData.variations.length === 1
+                        ? "#E5E5E5"
+                        : "#000000"
+                    }
                     onClick={() => {
-                      if (variations.length === 1) return;
-                      const newVariations = variations.filter(
+                      if (productData.variations.length === 1) return;
+                      const newVariations = productData.variations.filter(
                         (v, i) => i !== index
                       );
-                      setVariations(newVariations);
+                      setProductData((prev) => ({
+                        ...prev,
+                        variations: newVariations,
+                      }));
                     }}
                   />
                   <input
@@ -228,12 +313,17 @@ const Page = () => {
                     name={`variationsNames`}
                     placeholder="Variation name"
                     className="border-[1px] border-[#E5E5E5] rounded-[4px] px-[16px] py-[8px] text-[16px] h-fit"
-                    value={variation.name}
+                    value={variation.variationName}
                     onChange={(e) => {
-                      const newVariations = variations.map((v, i) =>
-                        i === index ? { ...v, name: e.target.value } : v
+                      const newVariations = productData.variations.map((v, i) =>
+                        i === index
+                          ? { ...v, variationName: e.target.value }
+                          : v
                       );
-                      setVariations(newVariations);
+                      setProductData((prev) => ({
+                        ...prev,
+                        variations: newVariations,
+                      }));
                     }}
                   />
                   <div className="flex flex-col gap-[8px]">
@@ -241,10 +331,10 @@ const Page = () => {
                       <div className="flex items-center gap-[8px]" key={indexx}>
                         <select
                           name={`productType_${format_variation_name(
-                            variation.name
+                            variation.variationName
                           )}`}
                           className="border-[1px] border-[#E5E5E5] rounded-[4px] px-[16px] py-[8px] text-[16px]"
-                          value={productType}
+                          value={variation.productType}
                           onChange={handleProductTypeChange}
                         >
                           <option value="Shirts">Shirts</option>
@@ -252,12 +342,12 @@ const Page = () => {
                         </select>
                         <select
                           name={`variationSize_${format_variation_name(
-                            variation.name
+                            variation.variationName
                           )}`}
                           className="border-[1px] border-[#E5E5E5] rounded-[4px] px-[16px] py-[8px] text-[16px]"
                           value={size.size}
                           onChange={(e) => {
-                            const newVariations = variations.map(
+                            const newVariations = productData.variations.map(
                               (variation, i) =>
                                 i === index
                                   ? {
@@ -274,7 +364,10 @@ const Page = () => {
                                     }
                                   : variation
                             );
-                            setVariations(newVariations);
+                            setProductData((prev) => ({
+                              ...prev,
+                              variations: newVariations,
+                            }));
                           }}
                         >
                           {selectOptions.map((option) => (
@@ -285,31 +378,59 @@ const Page = () => {
                         </select>
                         <input
                           name={`variationQuantity_${format_variation_name(
-                            variation.name
+                            variation.variationName
                           )}`}
                           type="text"
                           placeholder="Variation quantity"
                           className="border-[1px] border-[#E5E5E5] rounded-[4px] px-[16px] py-[8px] text-[16px]"
                           value={size.quantity}
                           onChange={(e) => {
-                            const newVariations = variations.map(
-                              (variation, vIndex) =>
-                                vIndex === index
-                                  ? {
-                                      ...variation,
-                                      sizes: variation.sizes.map(
-                                        (sizeItem, sIndex) =>
-                                          sIndex === indexx
-                                            ? {
-                                                ...sizeItem,
-                                                quantity: e.target.value,
-                                              }
-                                            : sizeItem
-                                      ),
-                                    }
-                                  : variation
+                            // const newVariations = productData.variations.map(
+                            //   (variationn, vIndex) =>
+                            //     vIndex === index
+                            //       ? {
+                            //           ...variationn,
+                            //           sizes: variationn.sizes.map(
+                            //             (sizeItem, sIndex) =>
+                            //               sIndex === indexx
+                            //                 ? {
+                            //                     ...sizeItem,
+                            //                     quantity: e.target.value,
+                            //                   }
+                            //                 : sizeItem
+                            //           ),
+                            //         }
+                            //       : variationn
+                            // );
+                            // setProductData((prev) => ({
+                            //   ...prev,
+                            //   newVariations,
+                            // }));
+                            const newVariations = productData.variations.map(
+                              (v, vIndex) => {
+                                if (vIndex === index) {
+                                  return {
+                                    ...v,
+                                    sizes: v.sizes.map((size, sIndex) => {
+                                      if (sIndex === indexx) {
+                                        return {
+                                          ...size,
+                                          quantity: e.target.value,
+                                        };
+                                      } else {
+                                        return size;
+                                      }
+                                    }),
+                                  };
+                                } else {
+                                  return v;
+                                }
+                              }
                             );
-                            setVariations(newVariations);
+                            setProductData((prev) => ({
+                              ...prev,
+                              variations: newVariations,
+                            }));
                           }}
                         />
                         <LucideX
@@ -319,18 +440,25 @@ const Page = () => {
                           }
                           onClick={() => {
                             if (variation.sizes.length === 1) return;
-                            const newVariations = variations.map(
-                              (variation, vIndex) =>
-                                vIndex === index
-                                  ? {
-                                      ...variation,
-                                      sizes: variation.sizes.filter(
-                                        (sizeItem, sIndex) => sIndex !== indexx
-                                      ),
-                                    }
-                                  : variation
+                            const newVariations = productData.variations.map(
+                              (v, vIndex) => {
+                                if (vIndex === index) {
+                                  return {
+                                    ...v,
+                                    sizes: variation.sizes.filter(
+                                      (sizeItem, sIndex) => sIndex !== indexx
+                                    ),
+                                  };
+                                } else {
+                                  return v;
+                                }
+                              }
                             );
-                            setVariations(newVariations);
+                            console.log("this new: ", newVariations);
+                            setProductData((prev) => ({
+                              ...prev,
+                              variations: newVariations,
+                            }));
                           }}
                         />
                       </div>
@@ -341,7 +469,7 @@ const Page = () => {
                   className="text-[16px] text-main underline cursor-pointer self-end"
                   type="button"
                   onClick={() => {
-                    const newVariations = variations.map((v, i) =>
+                    const newVariations = productData.variations.map((v, i) =>
                       i === index
                         ? {
                             ...v,
@@ -355,7 +483,10 @@ const Page = () => {
                           }
                         : v
                     );
-                    setVariations(newVariations);
+                    setProductData((prev) => ({
+                      ...prev,
+                      variations: newVariations,
+                    }));
                   }}
                 >
                   Add size
@@ -366,15 +497,21 @@ const Page = () => {
               className="text-[16px] text-main underline cursor-pointer"
               type="button"
               onClick={() => {
-                if (variations.length === 0) {
-                  setVariations([
-                    { name: "", sizes: [{ size: "", quantity: "" }] },
-                  ]);
+                if (productData.variations.length === 0) {
+                  setProductData((prev) => ({
+                    ...prev,
+                    variations: [
+                      { name: "", sizes: [{ size: "", quantity: "" }] },
+                    ],
+                  }));
                 } else {
-                  setVariations((prevVariations) => [
-                    ...prevVariations,
-                    variations[variations.length - 1],
-                  ]);
+                  setProductData((prev) => ({
+                    ...prev,
+                    variations: [
+                      ...prev.variations,
+                      prev.variations[prev.variations.length - 1],
+                    ],
+                  }));
                 }
               }}
             >
@@ -391,10 +528,17 @@ const Page = () => {
               name="price"
               placeholder={"Product price here"}
               className="border-[1px] border-[#E5E5E5] rounded-[4px] px-[16px] py-[8px] text-[16px]"
+              value={productData.price}
+              onChange={(e) => {
+                setProductData((prev) => ({
+                  ...prev,
+                  price: e.target.value,
+                }));
+              }}
             />
           </div>
           <div className="flex flex-col gap-[10px]">
-            <label htmlFor="description" className="text-[20px] font-semibold">
+            <label htmlFor="available" className="text-[20px] font-semibold">
               Available for sale
             </label>
             <div className="flex items-center gap-[10px]">
@@ -403,6 +547,13 @@ const Page = () => {
                 id="available"
                 name="available"
                 className="w-[20px] h-[20px]"
+                checked={productData.available}
+                onChange={(e) => {
+                  setProductData((prev) => ({
+                    ...prev,
+                    available: !prev.available,
+                  }));
+                }}
               />
               <label htmlFor="available" className="text-[16px]">
                 Yes
@@ -426,7 +577,7 @@ const Page = () => {
         </form>
         <div className="flex-1">
           <form
-            className="relative min-w-[300px] min-h-[300px] max-w-full "
+            className="relative min-w-[800] min-h-[600] max-w-full "
             encType="multipart/form-data"
           >
             <div className="min-w-[300px] min-h-[300px] w-full max-h-[500px] bg-gray-50 relative">
@@ -439,8 +590,11 @@ const Page = () => {
                 onChange={handleImageChange}
               />
               {imageURL && (
-                <img
+                <Image
                   src={imageURL}
+                  width={800} // Set the natural width of the image
+                  height={600} // Set the natural height of the image
+                  layout="intrinsic"
                   alt="product"
                   className="min-w-[300px] min-h-[300px] max-w-full max-h-[500px]"
                 />
@@ -452,9 +606,15 @@ const Page = () => {
                   key={image.file.name}
                   className="flex justify-between items-center px-[16px] py-[8px] bg-gray-50 rounded-[8px] gap-[8px]"
                 >
-                  <div className="w-[140px] h-[100px] overflow-clip rounded-[8px] border border-gray-50">
-                    <img
-                      src={URL.createObjectURL(image.file)}
+                  <div className="w-[140px] h-[100px] overflow-clip rounded-[8px] border border-gray-50 relative">
+                    <Image
+                      src={
+                        image.file.webContentLink
+                          ? image.file.webContentLink
+                          : URL.createObjectURL(image.file)
+                      }
+                      layout="fill" // Fills the container
+                      objectFit="cover"
                       alt="product"
                       className="object-cover w-full h-full"
                     />
@@ -472,15 +632,15 @@ const Page = () => {
                     {/* {(variations.length === 0 || !variations[0].name) && ( */}
                     <option value="">Select variation</option>
                     {/* )} */}
-                    {variations?.map((variation) => {
-                      if (!variation.name) return null;
+                    {productData.variations?.map((variation) => {
+                      if (!variation.variationName) return null;
                       return (
                         <option
-                          key={variation.name}
+                          key={variation.variationName}
                           className="border-[1px] rounded-[4px] px-[16px] py-[8px] text-[16px]"
-                          value={variation.name}
+                          value={variation.variationName}
                         >
-                          {variation.name}
+                          {variation.variationName}
                         </option>
                       );
                     })}
