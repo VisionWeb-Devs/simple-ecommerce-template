@@ -88,7 +88,9 @@ export const Header = ({}) => {
           <button onClick={toggleSearch} className="text-gray-600">
             <Search />
           </button>
-          <ShoppingBag className="text-gray-600" />
+          <Link href={"/cart"}>
+            <ShoppingBag className="text-gray-600" />
+          </Link>
         </div>
       </div>
 
