@@ -6,6 +6,7 @@ import {
   change_image_variation,
   getImages,
   upload_file,
+  uploadImages,
 } from "@/lib/googleDriveAdmin";
 import { LucideX } from "lucide-react";
 import Image from "next/image";
@@ -70,12 +71,12 @@ const Page = () => {
               variations: data.product.variations,
             }));
 
-            getImages(data.product.productID).then((images) => {
-              if (images.length === 0) return;
-              setImageURL(images.main_image.webContentLink);
-              console.log(images);
+            getImages(data.product.productID).then((res) => {
+              if (res.images.length === 0) return;
+              console.log(res.images);
+              setImageURL(res.main_image.webContentLink);
               setImages(
-                images.images.map((image, index) => ({
+                res.images.map((image, index) => ({
                   file: image,
                   response: "image uploaded",
                 }))
@@ -103,34 +104,70 @@ const Page = () => {
       },
     ],
   });
+
   const [confirmProduct, setConfirmProduct] = useState(false);
   const [images, setImages] = useState([]);
   const [imageURL, setImageURL] = React.useState("");
   const [selectOptions, setSelectOptions] = React.useState(shirtsOptions);
+  console.log("all", images);
 
   const handleImageChange = async (e) => {
     if (e.target.files.length === 0) return;
 
-    const selectedFiles = Array.from(e.target.files);
-    const uniqueFiles = selectedFiles.filter(
-      (file) => !images.some((prevFile) => prevFile.file.name === file.name)
-    );
+    // const all_images = Array.from(e.target.files);
+    let new_images = Array.from(e.target.files);
+    // let new_images = all_images.filter(
+    //   (file) => !images.some((prevFile) => prevFile.file.name === file.name)
+    // );
+    new_images = new_images.map((image, index) => {
+      return images.length === 0 && index === 0
+        ? {
+            file: new File([image], `main_image_${images.length + index}`),
+            status: "uploading...",
+          }
+        : {
+            file: new File([image], `image_${images.length + index}`),
+            status: "uploading...",
+          };
+    });
+    console.log("new", new_images);
+    setImages((prev) => [...prev, ...new_images]);
+    const formData = new FormData();
+    formData.set("images", JSON.stringify([]));
+    new_images.map((img) => {
+      const image_name = img.file.name;
+      const images_array = JSON.parse(formData.getAll("images"));
+      images_array.push(image_name);
+      formData.set("images", JSON.stringify(images_array));
+      formData.set(image_name, img.file);
+    });
+    formData.append("product_url", productData.productURL);
+    formData.append("product_id", productData.productID);
+    const res = await uploadImages(formData);
+    console.log(res);
+
+    return null;
 
     setImageURL(URL.createObjectURL(e.target.files[0]));
     setImages((prevImages) => [
       ...prevImages,
       ...uniqueFiles.map((file) => ({ file, response: "Uploading" })),
     ]);
+
     const uploadPromise = async (files) => {
       const formData = new FormData();
       formData.set("images", JSON.stringify([]));
       formData.set("files", []);
-      files.forEach((file, index) => {
+      files = files.map((file, index) => {
         let image_name = `image_${images.length + index}`;
         const images_array = JSON.parse(formData.getAll("images"));
         images_array.push(image_name);
         formData.set("images", JSON.stringify(images_array));
-        formData.append(image_name, file);
+        const renamedFile = new File([file], image_name, {
+          type: file.type,
+        });
+        formData.append(image_name, renamedFile);
+        return renamedFile;
       });
       formData.append("product_url", productData.productURL);
       formData.append("productID", productData.productID);
@@ -140,6 +177,7 @@ const Page = () => {
     };
     setImageURL(URL.createObjectURL(e.target.files[0]));
     await uploadPromise(uniqueFiles).then((uploadedFiles) => {
+      console.log("look here: ");
       setImages((prevImages) => {
         const newImages = [...prevImages];
         uploadedFiles.files.forEach((file, index) => {
@@ -154,13 +192,15 @@ const Page = () => {
   };
   const handleVariationChange = async (file, index, variation) => {
     const uploadPromises = async () => {
-      const formData = new FormData();
-      formData.append("variation", variation);
-      formData.append("index", index);
-      formData.append("product_url", productData.productURL);
-      formData.append("productID", productData.productID);
+      // const formData = new FormData();
+      // formData.append("variation", variation);
+      // formData.append("index", index);
+      // formData.append("product_url", productData.productURL);
+      // formData.append("productID", productData.productID);
+      // formData.append("image_name", file.name);
       const response = await change_image_variation(formData);
-      return { file, response };
+      return null;
+      // return { file, response };
     };
     setImages((prevImages) => {
       const newImages = [...prevImages];
@@ -169,17 +209,19 @@ const Page = () => {
       return newImages;
     });
 
-    await uploadPromises().then((uploadedFile) => {
-      setImages((prevImages) => {
-        const newImages = prevImages.map((prevImage) => {
-          if (prevImage.file.name === uploadedFile.file.name) {
-            return { ...prevImage, response: uploadedFile.response };
-          }
-          return prevImage;
-        });
-        return newImages;
-      });
-    });
+    await uploadPromises();
+
+    // await uploadPromises().then((uploadedFile) => {
+    //   setImages((prevImages) => {
+    //     const newImages = prevImages.map((prevImage) => {
+    //       if (prevImage.file.name === uploadedFile.file.name) {
+    //         return { ...prevImage, response: uploadedFile.response };
+    //       }
+    //       return prevImage;
+    //     });
+    //     return newImages;
+    //   });
+    // });
   };
   const handleProductTypeChange = (e) => {
     const selectedCategory = e.target.value;
@@ -214,7 +256,6 @@ const Page = () => {
   if (productURL && productData.productURL !== productURL) {
     return <div>Loading...</div>;
   }
-  console.log(images);
   return (
     <div className="py-[24px] px-[40px] w-full text-main">
       <div className="flex flex-col gap-[4px] font-semibold">
@@ -454,7 +495,6 @@ const Page = () => {
                                 }
                               }
                             );
-                            console.log("this new: ", newVariations);
                             setProductData((prev) => ({
                               ...prev,
                               variations: newVariations,
@@ -568,7 +608,8 @@ const Page = () => {
               confirmProduct ||
               images.some(
                 (image) =>
-                  image.response == "Uploading" || image.response == "Changing"
+                  image.status == "uploading..." ||
+                  image.status == "changing..."
               )
             }
           >
@@ -586,17 +627,19 @@ const Page = () => {
                 accept="image/*"
                 name="file"
                 multiple
-                className="cursor-pointer w-full h-full absolute top-0 left-0 opacity-0"
+                className="cursor-pointer w-full h-full absolute top-0 left-0 opacity-0 z-40"
                 onChange={handleImageChange}
               />
-              {imageURL && (
+              {images.length && (
                 <Image
-                  src={imageURL}
-                  width={800} // Set the natural width of the image
-                  height={600} // Set the natural height of the image
-                  layout="intrinsic"
+                  src={URL.createObjectURL(images[0].file)}
+                  fill
+                  objectFit="cover"
+                  className="object-cover"
+                  sizes="100%"
                   alt="product"
-                  className="min-w-[300px] min-h-[300px] max-w-full max-h-[500px]"
+                  priority={false}
+                  // className="min-w-[300px] min-h-[300px] max-w-full max-h-[500px]"
                 />
               )}
             </div>
@@ -613,10 +656,10 @@ const Page = () => {
                           ? image.file.webContentLink
                           : URL.createObjectURL(image.file)
                       }
-                      layout="fill" // Fills the container
-                      objectFit="cover"
                       alt="product"
-                      className="object-cover w-full h-full"
+                      fill
+                      className="object-cover"
+                      sizes="100%"
                     />
                   </div>
                   <div className="max-w-[200px] overflow-auto hide-scrollbar">
@@ -645,7 +688,7 @@ const Page = () => {
                       );
                     })}
                   </select>
-                  <div>{image.response}</div>
+                  <div>{image.status}</div>
                 </div>
               ))}
             </div>
