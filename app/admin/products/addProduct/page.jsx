@@ -4,11 +4,12 @@ import React, { useRef, useState, useEffect } from "react";
 import {
   add_product,
   change_image_variation,
+  delete_image,
   getImages,
   upload_file,
   uploadImages,
 } from "@/lib/googleDriveAdmin";
-import { LucideX } from "lucide-react";
+import { FileType, LucideX } from "lucide-react";
 import Image from "next/image";
 import { nanoid } from "nanoid";
 import { redirect } from "next/dist/server/api-utils";
@@ -73,12 +74,11 @@ const Page = () => {
 
             getImages(data.product.productID).then((res) => {
               if (res.images.length === 0) return;
-              console.log(res.images);
-              setImageURL(res.main_image.webContentLink);
+              console.log("got this images", res.images);
               setImages(
                 res.images.map((image, index) => ({
                   file: image,
-                  response: "image uploaded",
+                  status: "image uploaded",
                 }))
               );
             });
@@ -111,7 +111,7 @@ const Page = () => {
   const [selectOptions, setSelectOptions] = React.useState(shirtsOptions);
   console.log("all", images);
 
-  const handleImageChange = async (e) => {
+  const handleImageUpload = async (e) => {
     if (e.target.files.length === 0) return;
 
     // const all_images = Array.from(e.target.files);
@@ -144,84 +144,52 @@ const Page = () => {
     formData.append("product_url", productData.productURL);
     formData.append("product_id", productData.productID);
     const res = await uploadImages(formData);
-    console.log(res);
 
-    return null;
-
-    setImageURL(URL.createObjectURL(e.target.files[0]));
-    setImages((prevImages) => [
-      ...prevImages,
-      ...uniqueFiles.map((file) => ({ file, response: "Uploading" })),
-    ]);
-
-    const uploadPromise = async (files) => {
-      const formData = new FormData();
-      formData.set("images", JSON.stringify([]));
-      formData.set("files", []);
-      files = files.map((file, index) => {
-        let image_name = `image_${images.length + index}`;
-        const images_array = JSON.parse(formData.getAll("images"));
-        images_array.push(image_name);
-        formData.set("images", JSON.stringify(images_array));
-        const renamedFile = new File([file], image_name, {
-          type: file.type,
-        });
-        formData.append(image_name, renamedFile);
-        return renamedFile;
-      });
-      formData.append("product_url", productData.productURL);
-      formData.append("productID", productData.productID);
-
-      const response = await upload_file(formData);
-      return { files, response };
-    };
-    setImageURL(URL.createObjectURL(e.target.files[0]));
-    await uploadPromise(uniqueFiles).then((uploadedFiles) => {
-      console.log("look here: ");
-      setImages((prevImages) => {
-        const newImages = [...prevImages];
-        uploadedFiles.files.forEach((file, index) => {
-          newImages[images.length + index] = {
-            file,
-            response: uploadedFiles.response,
-          };
-        });
-        return newImages;
+    setImages((prevImages) => {
+      return prevImages.map((image) => {
+        if (
+          new_images.some((newImage) => newImage.file.name === image.file.name)
+        ) {
+          image.status = res;
+        }
+        return image;
       });
     });
   };
   const handleVariationChange = async (file, index, variation) => {
     const uploadPromises = async () => {
-      // const formData = new FormData();
-      // formData.append("variation", variation);
-      // formData.append("index", index);
-      // formData.append("product_url", productData.productURL);
-      // formData.append("productID", productData.productID);
-      // formData.append("image_name", file.name);
-      const response = await change_image_variation(formData);
-      return null;
-      // return { file, response };
+      const formData = new FormData();
+      formData.append("variation", variation);
+      formData.append("product_id", productData.productID);
+      formData.append("image_name", file.name);
+      const { name, status } = await change_image_variation(formData);
+      let newFile = file;
+      if (file && file instanceof File) {
+        newFile = new File([file], name);
+      } else {
+        file.name = name;
+        newFile = file;
+      }
+      return { file: newFile, status };
     };
     setImages((prevImages) => {
       const newImages = [...prevImages];
-
-      newImages[index] = { ...newImages[index], response: "Changing" };
+      newImages[index] = { ...newImages[index], status: "Changing" };
       return newImages;
     });
 
-    await uploadPromises();
-
-    // await uploadPromises().then((uploadedFile) => {
-    //   setImages((prevImages) => {
-    //     const newImages = prevImages.map((prevImage) => {
-    //       if (prevImage.file.name === uploadedFile.file.name) {
-    //         return { ...prevImage, response: uploadedFile.response };
-    //       }
-    //       return prevImage;
-    //     });
-    //     return newImages;
-    //   });
-    // });
+    await uploadPromises().then((uploadedFile) => {
+      setImages((prevImages) => {
+        const newImages = prevImages.map((prevImage) => {
+          console.log(prevImage.file.name, file.name);
+          if (prevImage.file.name == file.name) {
+            return { ...uploadedFile, status: uploadedFile.status };
+          }
+          return prevImage;
+        });
+        return newImages;
+      });
+    });
   };
   const handleProductTypeChange = (e) => {
     const selectedCategory = e.target.value;
@@ -252,6 +220,17 @@ const Page = () => {
       }
       setConfirmProduct(false);
     });
+  };
+
+  const handleRemoveImage = async (e, image) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.set("product_id", productData.productID);
+    formData.set("image_name", image.file.name);
+    const res = await delete_image(formData);
+    if (res === "image deleted") {
+      setImages((prev) => prev.filter((prevImage) => prevImage != image));
+    }
   };
   if (productURL && productData.productURL !== productURL) {
     return <div>Loading...</div>;
@@ -628,11 +607,34 @@ const Page = () => {
                 name="file"
                 multiple
                 className="cursor-pointer w-full h-full absolute top-0 left-0 opacity-0 z-40"
-                onChange={handleImageChange}
+                onChange={handleImageUpload}
               />
               {images.length && (
                 <Image
-                  src={URL.createObjectURL(images[0].file)}
+                  // src={() => {
+                  // const main_image = images.find((image) => {
+                  //   return image.name.includes("main_");
+                  // });
+                  //   console.log("main image: ", main_image);
+                  //   if (main_image.file && main_image.file instanceof File) {
+                  //     return URL.createObjectURL(main_image.file);
+                  //   } else {
+                  //     return main_image.file.webContentLink;
+                  //   }
+                  // }}
+                  src={
+                    images.find((image) => {
+                      return image.file.name.includes("main_");
+                    })?.file instanceof File
+                      ? URL.createObjectURL(
+                          images.find((image) => {
+                            return image.file.name.includes("main_");
+                          }).file
+                        )
+                      : images.find((image) => {
+                          return image.file.name.includes("main_");
+                        })?.file?.webContentLink
+                  }
                   fill
                   objectFit="cover"
                   className="object-cover"
@@ -668,6 +670,13 @@ const Page = () => {
                   <select
                     name="variation"
                     className="border-[1px] border-main rounded-[4px] px-[16px] py-[8px] text-[16px]"
+                    defaultValue={productData.variations
+                      ?.filter((variation) =>
+                        image.file.name.includes(
+                          variation.variationName.toLowerCase()
+                        )
+                      )
+                      .map((variation) => variation.variationName)}
                     onChange={(e) => {
                       handleVariationChange(image.file, index, e.target.value);
                     }}
@@ -689,6 +698,22 @@ const Page = () => {
                     })}
                   </select>
                   <div>{image.status}</div>
+                  <LucideX
+                    size={24}
+                    color={
+                      image.file.name.includes("main_") ? "#E5E5E5" : "#000000"
+                    }
+                    className={
+                      image.file.name.includes("main_")
+                        ? "cursor-not-allowed"
+                        : ""
+                    }
+                    onClick={(e) =>
+                      image.file.name.includes("main_")
+                        ? null
+                        : handleRemoveImage(e, image)
+                    }
+                  />
                 </div>
               ))}
             </div>
