@@ -1,34 +1,41 @@
 "use client";
-import Input from "@/components/admin/Input";
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   add_product,
   change_image_variation,
+  change_main_image,
   delete_image,
   getImages,
-  upload_file,
   uploadImages,
 } from "@/lib/googleDriveAdmin";
-import { FileType, LucideX } from "lucide-react";
+import { LucideX } from "lucide-react";
 import Image from "next/image";
 import { nanoid } from "nanoid";
-import { redirect } from "next/dist/server/api-utils";
 import { useRouter, useSearchParams } from "next/navigation";
 
-const shirtsOptions = [
-  { value: "XS", label: "XS" },
-  { value: "S", label: "S" },
-  { value: "M", label: "M" },
-  { value: "L", label: "L" },
-  { value: "XL", label: "XL" },
+const product_types = [
+  {
+    name: "Shirts",
+    choices: [
+      { value: "XS", label: "XS" },
+      { value: "S", label: "S" },
+      { value: "M", label: "M" },
+      { value: "L", label: "L" },
+      { value: "XL", label: "XL" },
+    ],
+  },
+  {
+    name: "Pants",
+    choices: [
+      { value: "28", label: "28" },
+      { value: "30", label: "30" },
+      { value: "32", label: "32" },
+      { value: "34", label: "34" },
+      { value: "36", label: "36" },
+    ],
+  },
 ];
-const pantsOptions = [
-  { value: "28", label: "28" },
-  { value: "30", label: "30" },
-  { value: "32", label: "32" },
-  { value: "34", label: "34" },
-  { value: "36", label: "36" },
-];
+
 const createSlug = (productName) => {
   return productName
     .toLowerCase()
@@ -51,7 +58,7 @@ const Page = () => {
   const router = useRouter();
   useEffect(() => {
     if (productURL) {
-      const productData = fetch("/api/productData", {
+      fetch("/api/productData", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -74,7 +81,6 @@ const Page = () => {
 
             getImages(data.product.productID).then((res) => {
               if (res.images.length === 0) return;
-              console.log("got this images", res.images);
               setImages(
                 res.images.map((image, index) => ({
                   file: image,
@@ -99,7 +105,7 @@ const Page = () => {
     variations: [
       {
         variationName: "",
-        productType: "",
+        productType: product_types[0].name,
         sizes: [{ size: "", quantity: "" }],
       },
     ],
@@ -107,30 +113,37 @@ const Page = () => {
 
   const [confirmProduct, setConfirmProduct] = useState(false);
   const [images, setImages] = useState([]);
-  const [imageURL, setImageURL] = React.useState("");
-  const [selectOptions, setSelectOptions] = React.useState(shirtsOptions);
-  console.log("all", images);
 
   const handleImageUpload = async (e) => {
     if (e.target.files.length === 0) return;
 
-    // const all_images = Array.from(e.target.files);
     let new_images = Array.from(e.target.files);
-    // let new_images = all_images.filter(
-    //   (file) => !images.some((prevFile) => prevFile.file.name === file.name)
-    // );
+
     new_images = new_images.map((image, index) => {
+      let skipTaken = 0;
+      while (
+        images.some((img) =>
+          img.file.name.includes(`_${images.length + index + skipTaken}`)
+        )
+      ) {
+        skipTaken++;
+      }
       return images.length === 0 && index === 0
         ? {
-            file: new File([image], `main_image_${images.length + index}`),
+            file: new File(
+              [image],
+              `main_image_${images.length + index + skipTaken}`
+            ),
             status: "uploading...",
           }
         : {
-            file: new File([image], `image_${images.length + index}`),
+            file: new File(
+              [image],
+              `image_${images.length + index + skipTaken}`
+            ),
             status: "uploading...",
           };
     });
-    console.log("new", new_images);
     setImages((prev) => [...prev, ...new_images]);
     const formData = new FormData();
     formData.set("images", JSON.stringify([]));
@@ -181,7 +194,6 @@ const Page = () => {
     await uploadPromises().then((uploadedFile) => {
       setImages((prevImages) => {
         const newImages = prevImages.map((prevImage) => {
-          console.log(prevImage.file.name, file.name);
           if (prevImage.file.name == file.name) {
             return { ...uploadedFile, status: uploadedFile.status };
           }
@@ -190,16 +202,6 @@ const Page = () => {
         return newImages;
       });
     });
-  };
-  const handleProductTypeChange = (e) => {
-    const selectedCategory = e.target.value;
-    // setProductType(selectedCategory);
-    // setProductData((prev) => ({ ...prev, productType: selectedCategory }));
-    if (selectedCategory === "Shirts") {
-      setSelectOptions(shirtsOptions);
-    } else if (selectedCategory === "Pants") {
-      setSelectOptions(pantsOptions);
-    }
   };
 
   const handleAddProduct = async (e) => {
@@ -230,6 +232,55 @@ const Page = () => {
     const res = await delete_image(formData);
     if (res === "image deleted") {
       setImages((prev) => prev.filter((prevImage) => prevImage != image));
+    }
+  };
+  const handleMainImageChange = async (e, image, index) => {
+    if (image.file.name.includes("main_")) {
+      return;
+    }
+    const formData = new FormData();
+    formData.set("product_id", productData.productID);
+    formData.set("image_name", image.file.name);
+    formData.set(
+      "main_name",
+      images.filter((img) => img.file.name.includes("main_"))[0].file.name
+    );
+    const newImages = images.map((img, i) => {
+      let newFile;
+      if (img.file.name.includes("main_")) {
+        if (img.file && img.file instanceof File) {
+          newFile = new File(
+            [img.file],
+            `${img.file.name
+              .split("_")
+              .slice(1, img.file.name.length)
+              .join("_")}`
+          );
+        } else {
+          img.file.name = `${img.file.name
+            .split("_")
+            .slice(1, img.file.name.length)
+            .join("_")}`;
+          newFile = img.file;
+        }
+        return { file: newFile, status: "image changed" };
+      } else if (i === index) {
+        if (img.file && img.file instanceof File) {
+          newFile = new File([img.file], `main_${img.file.name}`);
+        } else {
+          img.file.name = `main_${img.file.name}`;
+          newFile = img.file;
+        }
+        return { file: newFile, status: "image changed" };
+      }
+      return img;
+    });
+    formData.set("new_name", newImages[index].file.name);
+    const res = await change_main_image(formData);
+    if (res.status === "image changed") {
+      setImages(newImages);
+    } else {
+      alert("Error changing main image");
     }
   };
   if (productURL && productData.productURL !== productURL) {
@@ -355,34 +406,15 @@ const Page = () => {
                           )}`}
                           className="border-[1px] border-[#E5E5E5] rounded-[4px] px-[16px] py-[8px] text-[16px]"
                           value={variation.productType}
-                          onChange={handleProductTypeChange}
-                        >
-                          <option value="Shirts">Shirts</option>
-                          <option value="Pants">Pants</option>
-                        </select>
-                        <select
-                          name={`variationSize_${format_variation_name(
-                            variation.variationName
-                          )}`}
-                          className="border-[1px] border-[#E5E5E5] rounded-[4px] px-[16px] py-[8px] text-[16px]"
-                          value={size.size}
                           onChange={(e) => {
                             const newVariations = productData.variations.map(
-                              (variation, i) =>
-                                i === index
+                              (variationn, vIndex) =>
+                                vIndex === index
                                   ? {
-                                      ...variation,
-                                      sizes: variation.sizes.map(
-                                        (sizeItem, sizeIndex) =>
-                                          sizeIndex === indexx
-                                            ? {
-                                                ...sizeItem,
-                                                size: e.target.value,
-                                              }
-                                            : sizeItem
-                                      ),
+                                      ...variationn,
+                                      productType: e.target.value,
                                     }
-                                  : variation
+                                  : variationn
                             );
                             setProductData((prev) => ({
                               ...prev,
@@ -390,11 +422,59 @@ const Page = () => {
                             }));
                           }}
                         >
-                          {selectOptions.map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {option.label}
-                            </option>
-                          ))}
+                          {product_types.map((type) => {
+                            return (
+                              <option key={type.name} value={type.name}>
+                                {type.name}
+                              </option>
+                            );
+                          })}
+                        </select>
+                        <select
+                          name={`variationSize_${format_variation_name(
+                            variation.variationName
+                          )}`}
+                          className="border-[1px] border-[#E5E5E5] rounded-[4px] px-[16px] py-[8px] text-[16px]"
+                          value={variation.sizes[indexx].size}
+                          onChange={(e) => {
+                            const newVariations = productData.variations.map(
+                              (v, vIndex) => {
+                                if (vIndex === index) {
+                                  return {
+                                    ...v,
+                                    sizes: v.sizes.map((size, sIndex) => {
+                                      if (sIndex === indexx) {
+                                        return {
+                                          ...size,
+                                          size: e.target.value,
+                                        };
+                                      } else {
+                                        return size;
+                                      }
+                                    }),
+                                  };
+                                } else {
+                                  return v;
+                                }
+                              }
+                            );
+                            setProductData((prev) => ({
+                              ...prev,
+                              variations: newVariations,
+                            }));
+                          }}
+                        >
+                          {product_types
+                            .filter(
+                              (type) => type.name === variation.productType
+                            )
+                            .map((type) => {
+                              return type.choices.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                  {option.value}
+                                </option>
+                              ));
+                            })}
                         </select>
                         <input
                           name={`variationQuantity_${format_variation_name(
@@ -405,27 +485,6 @@ const Page = () => {
                           className="border-[1px] border-[#E5E5E5] rounded-[4px] px-[16px] py-[8px] text-[16px]"
                           value={size.quantity}
                           onChange={(e) => {
-                            // const newVariations = productData.variations.map(
-                            //   (variationn, vIndex) =>
-                            //     vIndex === index
-                            //       ? {
-                            //           ...variationn,
-                            //           sizes: variationn.sizes.map(
-                            //             (sizeItem, sIndex) =>
-                            //               sIndex === indexx
-                            //                 ? {
-                            //                     ...sizeItem,
-                            //                     quantity: e.target.value,
-                            //                   }
-                            //                 : sizeItem
-                            //           ),
-                            //         }
-                            //       : variationn
-                            // );
-                            // setProductData((prev) => ({
-                            //   ...prev,
-                            //   newVariations,
-                            // }));
                             const newVariations = productData.variations.map(
                               (v, vIndex) => {
                                 if (vIndex === index) {
@@ -611,17 +670,6 @@ const Page = () => {
               />
               {images.length && (
                 <Image
-                  // src={() => {
-                  // const main_image = images.find((image) => {
-                  //   return image.name.includes("main_");
-                  // });
-                  //   console.log("main image: ", main_image);
-                  //   if (main_image.file && main_image.file instanceof File) {
-                  //     return URL.createObjectURL(main_image.file);
-                  //   } else {
-                  //     return main_image.file.webContentLink;
-                  //   }
-                  // }}
                   src={
                     images.find((image) => {
                       return image.file.name.includes("main_");
@@ -641,7 +689,6 @@ const Page = () => {
                   sizes="100%"
                   alt="product"
                   priority={false}
-                  // className="min-w-[300px] min-h-[300px] max-w-full max-h-[500px]"
                 />
               )}
             </div>
@@ -670,20 +717,20 @@ const Page = () => {
                   <select
                     name="variation"
                     className="border-[1px] border-main rounded-[4px] px-[16px] py-[8px] text-[16px]"
-                    defaultValue={productData.variations
-                      ?.filter((variation) =>
-                        image.file.name.includes(
-                          variation.variationName.toLowerCase()
+                    defaultValue={
+                      productData.variations
+                        ?.filter((variation) =>
+                          image.file.name.includes(
+                            variation.variationName.toLowerCase()
+                          )
                         )
-                      )
-                      .map((variation) => variation.variationName)}
+                        .map((variation) => variation.variationName)[0]
+                    }
                     onChange={(e) => {
                       handleVariationChange(image.file, index, e.target.value);
                     }}
                   >
-                    {/* {(variations.length === 0 || !variations[0].name) && ( */}
                     <option value="">Select variation</option>
-                    {/* )} */}
                     {productData.variations?.map((variation) => {
                       if (!variation.variationName) return null;
                       return (
@@ -697,6 +744,12 @@ const Page = () => {
                       );
                     })}
                   </select>
+                  <input
+                    type="checkbox"
+                    checked={image.file.name.includes("main_")}
+                    name="main"
+                    onChange={(e) => handleMainImageChange(e, image, index)}
+                  />
                   <div>{image.status}</div>
                   <LucideX
                     size={24}
