@@ -1,5 +1,10 @@
 import React from "react";
-import { MoreVertical, ArrowUp, CirclePlus } from "lucide-react";
+import {
+  MoreVertical,
+  ArrowUp,
+  CirclePlus,
+  LucideImageOff,
+} from "lucide-react";
 import { getAdminProducts } from "@/lib/firebase";
 import { getImages } from "@/lib/googleDriveAdmin";
 import Image from "next/image";
@@ -10,15 +15,20 @@ const ProductCard = ({
 }) => (
   <div className="bg-white rounded-lg shadow-md p-4 flex flex-col">
     <div className="flex justify-between items-start mb-4">
-      <div className="flex items-center">
-        <Image
-          src={main_image ? main_image.webContentLink : "/no-image.png"}
-          alt={name}
-          className="object-cover mr-4"
-          width={100}
-          height={100}
-        />
-
+      <div className="flex gap-4 items-center">
+        {main_image ? (
+          <Image
+            src={main_image.webContentLink}
+            alt={name}
+            className="object-cover"
+            width={100}
+            height={100}
+          />
+        ) : (
+          <div className="w-[100px] h-[100px] flex justify-center items-center bg-gray-50">
+            <LucideImageOff size={40} />
+          </div>
+        )}
         <div>
           <h3 className="font-semibold text-sm sm:text-base">{name}</h3>
           {/* <p className="text-gray-600 text-xs sm:text-sm">{product.category}</p> */}
@@ -62,7 +72,9 @@ const ProductGrid = async () => {
     }
     products.push({
       ...product,
-      main_image: images.images[0],
+      main_image: images.images.filter((image) =>
+        image.name.includes("main_")
+      )[0],
       images: images.images,
     });
   }
