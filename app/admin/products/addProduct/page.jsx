@@ -2,9 +2,9 @@
 import React, { useState, useEffect } from "react";
 import { getImages } from "@/lib/googleDriveAdmin";
 import { nanoid } from "nanoid";
-import { useRouter, useSearchParams } from "next/navigation";
-import AddProductFrom from "@/components/admin/addProduct/addProductFrom";
-import AddProductImagesFrom from "@/components/admin/addProduct/addProductImagesFrom";
+import { useSearchParams } from "next/navigation";
+import AddProductFrom from "@/components/admin/addProduct/AddProductFrom";
+import AddProductImagesFrom from "@/components/admin/addProduct/AddProductImagesFrom";
 
 const product_types = [
   {
