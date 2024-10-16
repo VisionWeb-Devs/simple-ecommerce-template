@@ -3,6 +3,7 @@ import { MoreVertical, ArrowUp, CirclePlus } from "lucide-react";
 import { getAdminProducts } from "@/lib/firebase";
 import { getImages } from "@/lib/googleDriveAdmin";
 import Image from "next/image";
+import Link from "next/link";
 
 const ProductCard = ({
   product: { name, productURL, productID, price, main_image, available },
@@ -11,19 +12,25 @@ const ProductCard = ({
     <div className="flex justify-between items-start mb-4">
       <div className="flex items-center">
         <Image
-          src={main_image.webContentLink}
+          src={main_image ? main_image.webContentLink : "/no-image.png"}
           alt={name}
           className="object-cover mr-4"
           width={100}
           height={100}
         />
+
         <div>
           <h3 className="font-semibold text-sm sm:text-base">{name}</h3>
           {/* <p className="text-gray-600 text-xs sm:text-sm">{product.category}</p> */}
           <p className="font-bold mt-2 text-sm sm:text-base">{price}DA</p>
         </div>
       </div>
-      <button className="text-gray-500 hover:text-gray-700">Edit</button>
+      <Link
+        href={`/admin/products/addProduct?productURL=${productURL}`}
+        className="text-gray-500 hover:text-gray-700"
+      >
+        Edit
+      </Link>
     </div>
     <div>
       {/* <h4 className="font-semibold mb-2 text-sm sm:text-base">Summary</h4> */}
@@ -50,6 +57,9 @@ const ProductGrid = async () => {
   const res = await getAdminProducts();
   for (const product of res) {
     const images = await getImages(product.productID);
+    if (!images) {
+      continue;
+    }
     products.push({
       ...product,
       main_image: images.images[0],
