@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 
-const Size = () => {
+const Sizes = ({ variations }) => {
   const [selectedSize, setSelectedSize] = useState("LARGE");
 
   const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
@@ -27,4 +27,4 @@ const Size = () => {
   );
 };
 
-export default Size;
+export default Sizes;
