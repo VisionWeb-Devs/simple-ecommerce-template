@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { getImages } from "@/lib/googleDriveAdmin";
 
 import { nanoid } from "nanoid";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import AddProductFrom from "@/components/admin/addProduct/addProductFrom";
 import AddProductImagesFrom from "@/components/admin/addProduct/addProductImagesFrom";
 
@@ -89,9 +89,6 @@ const Page = () => {
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState([]);
 
-  if (productURL && productData.productURL !== productURL) {
-    return <div>Loading...</div>;
-  }
   return (
     <div className="py-[24px] px-[40px] w-full text-main">
       <div className="flex flex-col gap-[4px] font-semibold">
