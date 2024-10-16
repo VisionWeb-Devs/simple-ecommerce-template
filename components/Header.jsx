@@ -40,7 +40,9 @@ export const Header = ({}) => {
 
       <div className="hidden md:flex items-center justify-between p-4">
         <div className="flex items-center space-x-8">
-          <Image src={main_logo} alt="logo" width={100} />
+          <Link href={"/"} alt="home">
+            <Image src={main_logo} alt="logo" width={100} />
+          </Link>
           <nav>
             <ul className="flex space-x-4 text-xl">
               <li>
@@ -99,12 +101,18 @@ export const Header = ({}) => {
           <button onClick={toggleMenu} className="text-gray-600 z-50">
             {isMenuOpen ? <X /> : <Menu />}
           </button>
-          <Image src={main_logo} alt="logo" width={100} />
-          <div className="flex items-center space-x-2">
+          <Link href={"/"} alt="home">
+            <div className="cursor-pointer">
+              <Image src={main_logo} alt="logo" width={100} />
+            </div>
+          </Link>
+          <div className="flex items-center space-x-7">
             <button onClick={toggleSearch} className="text-gray-600">
               <Search />
             </button>
-            <ShoppingBag className="text-gray-600" />
+            <Link href={"/cart"}>
+              <ShoppingBag className="text-gray-600" />
+            </Link>
           </div>
         </div>
 

@@ -1,5 +1,6 @@
 "use client";
 import { Categories } from "@/components/home/Categories";
+import Hero from "@/components/home/Hero";
 import { TopSelling } from "@/components/home/TopSelling";
 // import { useEffect, useState } from "react";
 
@@ -20,6 +21,7 @@ export default function Home() {
   // if (loading) return <div>Loading...</div>;
   return (
     <div>
+      <Hero />
       <TopSelling />
       <Categories />
     </div>

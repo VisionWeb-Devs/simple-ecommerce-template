@@ -91,12 +91,6 @@ const ShoppingCart = () => {
         <h2 className="text-3xl sm:text-4xl font-bold mb-2 sm:mb-0">
           Your cart
         </h2>
-        <Link
-          href="/"
-          className="text-black hover:underline hover:underline-offset-2"
-        >
-          Continue shopping
-        </Link>
       </div>
       <div className="mb-4">
         <div className="hidden sm:flex justify-between text-sm text-gray-600 mb-2">
@@ -122,14 +116,24 @@ const ShoppingCart = () => {
         <p className="font-semibold">
           Estimated total: DA {total.toFixed(2)} DZD
         </p>
-        <button>
-          <Link
-            href="/checkouts/checkout"
-            className="bg-black text-white py-2 px-4 hover:bg-gray-800 transition-colors"
-          >
-            Proceed to checkout
-          </Link>
-        </button>
+        <div className="flex justify-between">
+          <button>
+            <Link
+              href="/"
+              className="bg-black text-white py-2 px-4 hover:bg-gray-800 transition-colors"
+            >
+              Continue shopping
+            </Link>
+          </button>
+          <button>
+            <Link
+              href="/checkouts/checkout"
+              className="bg-black text-white py-2 px-4 hover:bg-gray-800 transition-colors"
+            >
+              Proceed to checkout
+            </Link>
+          </button>
+        </div>
       </div>
     </div>
   );
