@@ -7,7 +7,7 @@ const AdminHeader = () => {
     window.href = "/login";
   };
   return (
-    <div className="flex w-full h-[100px] justify-end items-center px-[60px] gap-7 text-lg border-b-[1px] select-none shadow-bottom uppercase">
+    <div className="flex w-full h-[100px] justify-end items-center px-[60px] gap-7 text-lg border-b-[1px] select-none shadow-bottom uppercase bg-white">
       <a
         href="#"
         className="text-black justify-center items-center transition font-semibold duration-300"

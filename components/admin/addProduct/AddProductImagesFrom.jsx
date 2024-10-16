@@ -161,10 +161,10 @@ const AddProductImagesFrom = ({ images, setImages, productData, loading }) => {
   };
   return (
     <form
-      className="relative min-w-[800] min-h-[600] max-w-full flex-1"
+      className="relative w-full max-w-4xl mx-auto h-full "
       encType="multipart/form-data"
     >
-      <div className="min-w-[300px] min-h-[300px] w-full max-h-[500px] bg-gray-50 relative">
+      <div className="w-full h-0 pb-[75%] bg-gray-50 relative mb-6">
         <input
           type="file"
           accept="image/*"
@@ -173,107 +173,108 @@ const AddProductImagesFrom = ({ images, setImages, productData, loading }) => {
           className="cursor-pointer w-full h-full absolute top-0 left-0 opacity-0 z-40"
           onChange={handleImageUpload}
         />
-        {images.length && (
+        {images.length > 0 && (
           <Image
             src={
-              images.find((image) => {
-                return image.file.name.includes("main_");
-              })?.file instanceof File
+              images.find((image) => image.file.name.includes("main_"))
+                ?.file instanceof File
                 ? URL.createObjectURL(
-                    images.find((image) => {
-                      return image.file.name.includes("main_");
-                    }).file
+                    images.find((image) => image.file.name.includes("main_"))
+                      .file
                   )
-                : images.find((image) => {
-                    return image.file.name.includes("main_");
-                  })?.file?.webContentLink
+                : images.find((image) => image.file.name.includes("main_"))
+                    ?.file?.webContentLink
             }
             fill
-            objectFit="cover"
             className="object-cover"
-            sizes="100%"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             alt="product"
             priority={false}
           />
         )}
       </div>
-      <div className="flex flex-col gap-[8px] mt-[24px] h-full">
+      <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 ">
         {images.map((image, index) => (
           <div
             key={image.file.name}
-            className="flex justify-between items-center px-[16px] py-[8px] bg-gray-50 rounded-[8px] gap-[8px]"
+            className="flex flex-col sm:flex-row md:flex-col bg-white border border-gray-200 rounded-lg shadow-md "
           >
-            <div className="w-[140px] h-[100px] overflow-clip rounded-[8px] border border-gray-50 relative">
-              <Image
-                src={
-                  image.file.webContentLink
-                    ? image.file.webContentLink
-                    : URL.createObjectURL(image.file)
-                }
-                alt="product"
-                fill
-                className="object-cover"
-                sizes="100%"
-              />
-            </div>
-            <div className="max-w-[200px] overflow-auto hide-scrollbar">
-              {image.file.name}
-            </div>
-            <select
-              name="variation"
-              className="border-[1px] border-main rounded-[4px] px-[16px] py-[8px] text-[16px]"
-              defaultValue={
-                productData.variations
-                  ?.filter((variation) =>
-                    image.file.name.includes(
-                      variation.variationName.toLowerCase()
+            <div className="p-4 flex flex-col gap-2 sm:w-2/3 md:w-full ">
+              <div className=" sm:w-1/3 flex md:w-full h-64 sm:h-auto w-full justify-center items-center">
+                <Image
+                  src={
+                    image.file.webContentLink
+                      ? image.file.webContentLink
+                      : URL.createObjectURL(image.file)
+                  }
+                  alt="product"
+                  height={150}
+                  width={200}
+                  className=" md:justify-center md:items-center md:flex md:w-full py-4 md:pt-2"
+                  sizes="100%"
+                />
+              </div>
+              <div className="text-sm truncate pt-6 md:pt-2">
+                {image.file.name}
+              </div>
+              <select
+                name="variation"
+                className="w-full border border-main rounded px-2 py-1 text-sm"
+                defaultValue={
+                  productData.variations
+                    ?.filter((variation) =>
+                      image.file.name.includes(
+                        variation.variationName.toLowerCase()
+                      )
                     )
-                  )
-                  .map((variation) => variation.variationName)[0]
-              }
-              onChange={(e) => {
-                handleVariationChange(image.file, index, e.target.value);
-              }}
-            >
-              <option value="">Select variation</option>
-              {productData.variations?.map((variation) => {
-                if (!variation.variationName) return null;
-                return (
-                  <option
-                    key={variation.variationName}
-                    className="border-[1px] rounded-[4px] px-[16px] py-[8px] text-[16px]"
-                    value={variation.variationName}
-                  >
-                    {variation.variationName}
-                  </option>
-                );
-              })}
-            </select>
-            <input
-              type="checkbox"
-              checked={image.file.name.includes("main_")}
-              name="main"
-              onChange={(e) => handleMainImageChange(e, image, index)}
-            />
-            <div>{image.status}</div>
-            <LucideX
-              size={24}
-              color={
-                image.file.name.includes("main_") || loading
-                  ? "#E5E5E5"
-                  : "#000000"
-              }
-              className={
-                image.file.name.includes("main_") || loading
-                  ? "cursor-not-allowed"
-                  : ""
-              }
-              onClick={(e) =>
-                image.file.name.includes("main_") || loading
-                  ? null
-                  : handleRemoveImage(e, image)
-              }
-            />
+                    .map((variation) => variation.variationName)[0]
+                }
+                onChange={(e) => {
+                  handleVariationChange(image.file, index, e.target.value);
+                }}
+              >
+                <option value="">Select variation</option>
+                {productData.variations?.map((variation) => {
+                  if (!variation.variationName) return null;
+                  return (
+                    <option
+                      key={variation.variationName}
+                      value={variation.variationName}
+                    >
+                      {variation.variationName}
+                    </option>
+                  );
+                })}
+              </select>
+              <div className="flex items-center justify-between">
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={image.file.name.includes("main_")}
+                    name="main"
+                    onChange={(e) => handleMainImageChange(e, image, index)}
+                    className="mr-2"
+                  />
+                  Main
+                </label>
+                <div className="text-sm">{image.status}</div>
+                <button
+                  onClick={(e) =>
+                    image.file.name.includes("main_") || loading
+                      ? null
+                      : handleRemoveImage(e, image)
+                  }
+                  disabled={image.file.name.includes("main_") || loading}
+                  className={`p-1 ${
+                    image.file.name.includes("main_") || loading
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  }`}
+                >
+                  <LucideX size={20} />
+                </button>
+              </div>
+            </div>
           </div>
         ))}
       </div>

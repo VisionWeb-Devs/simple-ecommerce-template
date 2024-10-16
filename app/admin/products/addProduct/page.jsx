@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { getImages } from "@/lib/googleDriveAdmin";
-
 import { nanoid } from "nanoid";
 import { useRouter, useSearchParams } from "next/navigation";
 import AddProductFrom from "@/components/admin/addProduct/addProductFrom";
@@ -47,6 +46,7 @@ const Page = () => {
       },
     ],
   });
+
   useEffect(() => {
     if (productURL) {
       fetch("/api/productData", {
@@ -73,7 +73,7 @@ const Page = () => {
             getImages(data.product.productID).then((res) => {
               if (res.images.length === 0) return;
               setImages(
-                res.images.map((image, index) => ({
+                res.images.map((image) => ({
                   file: image,
                   status: "image uploaded",
                 }))
@@ -89,35 +89,37 @@ const Page = () => {
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState([]);
 
-  if (productURL && productData.productURL !== productURL) {
-    return <div>Loading...</div>;
-  }
   return (
-    <div className="py-[24px] px-[40px] w-full text-main">
-      <div className="flex flex-col gap-[4px] font-semibold">
-        <div className="text-[24px]">Add new Product</div>
-        <div className="text-[16px]">
+    <div className="bg-white">
+      <div className="flex flex-col gap-2 font-semibold mb-6">
+        <h1 className="text-2xl md:text-3xl">Add new Product</h1>
+        <p className="text-sm md:text-base">
           Admin {">"} All products {">"} Add new product
-        </div>
+        </p>
       </div>
-      <div className="flex gap-[48px]">
-        <AddProductFrom
-          productData={productData}
-          setProductData={setProductData}
-          product_types={product_types}
-          loading={loading}
-          setLoading={setLoading}
-        />
-        <AddProductImagesFrom
-          images={images}
-          setImages={setImages}
-          productData={{
-            productID: productData.productID,
-            variations: productData.variations,
-          }}
-          loading={loading}
-          setLoading={setLoading}
-        />
+
+      <div className="flex flex-col-reverse lg:flex-row gap-8 flex-grow h-full min-h-screen ">
+        <div className="w-full lg:w-1/2 flex-grow h-full">
+          <AddProductFrom
+            productData={productData}
+            setProductData={setProductData}
+            product_types={product_types}
+            loading={loading}
+            setLoading={setLoading}
+          />
+        </div>
+        <div className="w-full lg:w-1/2 h-full flex-grow">
+          <AddProductImagesFrom
+            images={images}
+            setImages={setImages}
+            productData={{
+              productID: productData.productID,
+              variations: productData.variations,
+            }}
+            loading={loading}
+            setLoading={setLoading}
+          />
+        </div>
       </div>
     </div>
   );

@@ -26,15 +26,16 @@ export default function AdminLayout({ children }) {
   if (loading) {
     return <div>Loading...</div>;
   }
+
   return (
-    <div className="lg:flex ">
+    <div className="lg:flex min-h-screen ">
       <div className="flex w-[250px] h-0">
         <AdminNavigation />
       </div>
 
-      <div className="lg:flex-1  ">
+      <div className="lg:flex-1 flex flex-col min-h-screen bg-gray-50">
         <AdminHeader />
-        {children}
+        <div className="flex-grow ">{children}</div>
         <AdminFooter />
       </div>
     </div>
