@@ -4,8 +4,8 @@ import { getImages } from "@/lib/googleDriveAdmin";
 
 import { nanoid } from "nanoid";
 import { useSearchParams } from "next/navigation";
-import AddProductFrom from "@/components/admin/addProduct/addProductFrom";
-import AddProductImagesFrom from "@/components/admin/addProduct/addProductImagesFrom";
+import AddProductFrom from "@/components/admin/addProduct/AddProductFrom.jsx";
+import AddProductImagesFrom from "@/components/admin/addProduct/addProductImagesFrom.jsx";
 
 const product_types = [
   {
