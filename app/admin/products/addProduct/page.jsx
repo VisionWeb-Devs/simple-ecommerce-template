@@ -37,6 +37,7 @@ const Page = () => {
     description: "",
     productURL: "",
     price: 0.0,
+    salePrice: 0.0,
     available: false,
     variations: [
       {
@@ -65,6 +66,7 @@ const Page = () => {
               productName: data.product.name,
               description: data.product.description,
               price: data.product.price,
+              salePrice: data.product.salePrice,
               productURL: data.product.productURL,
               available: data.product.available,
               variations: data.product.variations,

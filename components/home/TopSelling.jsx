@@ -1,6 +1,7 @@
 import React from "react";
-import { Star } from "lucide-react";
+import { Star, ShoppingCart } from "lucide-react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 const products = [
   {
@@ -61,57 +62,86 @@ const products = [
 ];
 
 const ProductCard = ({ product }) => (
-  <Link href={`products/${product.name}`}>
-    <div className="bg-white p-4 rounded-lg ">
-      <div className="relative bg-[#F3F3F3]  shadow ">
+  <motion.div
+    whileHover={{ y: -10 }}
+    transition={{ duration: 0.3 }}
+    className="bg-white rounded-lg shadow-lg overflow-hidden relative"
+  >
+    <Link href={`/products/${product.name}`}>
+      <div className="relative">
         <img
           src={product.image}
           alt={product.name}
-          className="w-full h-[300px] object-cover mb-4 transition-transform duration-500 ease-in-out hover:scale-105"
+          className="w-full h-[300px] object-cover transition-transform duration-500 ease-in-out hover:scale-110"
         />
         {product.sale && (
-          <span className="absolute bottom-2 left-2 bg-black text-white text-md font-bold px-2 py-1 rounded">
+          <span className="absolute top-2 left-2 bg-gray-800 text-white text-xs font-bold px-3 py-1 rounded-full">
             Sale
           </span>
         )}
       </div>
-      <h3 className="text-xl font-semibold mb-2">{product.name}</h3>
-      <div className="flex items-center mb-2">
-        {[...Array(5)].map((_, i) => (
-          <Star
-            key={i}
-            size={16}
-            className={
-              i < product.rating
-                ? "text-yellow-400 fill-current"
-                : "text-gray-300"
-            }
-          />
-        ))}
-        {product.reviews > 0 && (
-          <span className="text-xs ml-1">({product.reviews})</span>
-        )}
-      </div>
-      <div className="flex items-center justify-between ">
-        <span className="font-bold text-xl">{product.price}</span>
-        {product.originalPrice && (
-          <span className="text-md line-through text-gray-500">
-            {product.originalPrice}
+      <div className="p-4">
+        <h3 className="text-lg font-semibold mb-2 truncate">{product.name}</h3>
+        <div className="flex items-center mb-2">
+          {[...Array(5)].map((_, i) => (
+            <Star
+              key={i}
+              size={16}
+              className={
+                i < Math.floor(product.rating)
+                  ? "text-yellow-400 fill-current"
+                  : "text-gray-300"
+              }
+            />
+          ))}
+          <span className="text-sm ml-1 text-gray-600">
+            {product.rating.toFixed(1)} ({product.reviews})
           </span>
-        )}
+        </div>
+        <div className="flex items-center justify-between">
+          <div>
+            <span className="font-bold text-lg text-black">
+              {product.price}
+            </span>
+            {product.originalPrice && (
+              <span className="text-sm line-through text-gray-500 ml-2">
+                {product.originalPrice}
+              </span>
+            )}
+          </div>
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            className="bg-gray-700 text-white p-2 rounded-full hover:bg-black transition-colors duration-300"
+          >
+            <ShoppingCart size={20} />
+          </motion.button>
+        </div>
       </div>
-    </div>
-  </Link>
+    </Link>
+  </motion.div>
 );
 
 export const TopSelling = () => {
   return (
-    <div className="container mx-auto lg:px-28 md:px-14 px-9 py-8">
-      <h1 className="text-3xl font-bold mb-8 pl-10 ">TOP SELLING ITEMS</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {products.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
+    <div className="bg-gray-100 py-16">
+      <div className="container mx-auto lg:px-28 md:px-14 px-9">
+        <div className="flex items-center justify-between mb-12">
+          <h2 className="text-4xl font-bold text-gray-800">
+            Top Selling Items
+          </h2>
+          <Link
+            href="/collections"
+            className="text-gray-700 text-lg hover:text-black transition-colors duration-300"
+          >
+            View All Items &rarr;
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {products.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -86,7 +86,7 @@ const AddProductFrom = ({
           id="description"
           name="description"
           placeholder="Product description here"
-          className="border-[1px] border-[#E5E5E5] rounded-[4px] px-[16px] py-[8px] text-[16px] min-h-[42px] max-h-[500px]"
+          className="border-[1px] border-[#E5E5E5] rounded-[4px] px-[16px] py-[8px] text-[16px] min-h-[100px] max-h-[500px]"
           value={productData.description}
           onChange={(e) => {
             setProductData((prev) => ({
@@ -116,6 +116,25 @@ const AddProductFrom = ({
             setProductData((prev) => ({
               ...prev,
               price: e.target.value,
+            }));
+          }}
+        />
+      </div>
+      <div className="flex flex-col gap-[10px]">
+        <label htmlFor="salePrice" className="text-[20px] font-semibold">
+          Product Sale Price
+        </label>
+        <input
+          type="text"
+          id="salePrice"
+          name="salePrice"
+          placeholder={"Product sale price here"}
+          className="border-[1px] border-[#E5E5E5] rounded-[4px] px-[16px] py-[8px] text-[16px]"
+          value={productData.salePrice}
+          onChange={(e) => {
+            setProductData((prev) => ({
+              ...prev,
+              salePrice: e.target.value,
             }));
           }}
         />

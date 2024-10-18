@@ -216,7 +216,7 @@ const AddproductFromVariations = ({
             </div>
           </div>
           <button
-            className="text-sm text-main underline cursor-pointer self-end"
+            className="text-sm text-main  cursor-pointer self-end"
             type="button"
             onClick={() => {
               const newVariations = productData.variations.map((v, i) =>
@@ -239,12 +239,14 @@ const AddproductFromVariations = ({
               }));
             }}
           >
-            Add size
+            <span className="text-lg hover:underline font-semibold ">
+              Add size
+            </span>
           </button>
         </div>
       ))}
       <button
-        className="text-sm text-main underline cursor-pointer"
+        className="text-sm text-main  cursor-pointer"
         type="button"
         onClick={() => {
           if (productData.variations.length === 0) {
@@ -263,7 +265,9 @@ const AddproductFromVariations = ({
           }
         }}
       >
-        Add variation
+        <span className="text-lg hover:underline font-semibold">
+          Add variation
+        </span>
       </button>
     </div>
   );
