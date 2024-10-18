@@ -25,16 +25,16 @@ const ProductWrapper = ({ productData }) => {
               className="w-full h-80 object-cover transition-transform duration-500 ease-in-out hover:scale-105 p-3"
             />
           ) : (
-            <div className="w-[300px] h-[300px] flex justify-center items-center bg-gray-50">
+            <div className="w-full h-80 flex justify-center items-center bg-gray-50 flex-col object-cover">
               <LucideImageOff size={40} />
+              <h1 className="font-semibold">Images not found</h1>
             </div>
           )}
-          {salePrice ||
-            (salePrice > 0 && (
-              <span className="absolute top-5 left-4 bg-gray-800 text-white text-xs font-bold px-3 py-1 rounded-full">
-                Sale
-              </span>
-            ))}
+          {(salePrice || salePrice > 0) && (
+            <span className="absolute top-5 left-4 bg-gray-800 text-white text-xs font-bold px-3 py-1 rounded-full">
+              Sale
+            </span>
+          )}
         </div>
         <div className="p-6">
           <h3 className="text-lg font-semibold mb-2 truncate">{name}</h3>
@@ -59,12 +59,11 @@ const ProductWrapper = ({ productData }) => {
           <div className="flex items-center justify-between">
             <div>
               <span className="font-bold text-xl text-black">{price} DZD</span>
-              {salePrice ||
-                (salePrice > 0 && (
-                  <span className="text-sm line-through text-gray-500 ml-2">
-                    {price} DZD
-                  </span>
-                ))}
+              {(salePrice || salePrice > 0) && (
+                <span className="text-sm line-through text-gray-500 ml-2">
+                  {price} DZD
+                </span>
+              )}
             </div>
             <motion.button
               whileHover={{ scale: 1.1 }}

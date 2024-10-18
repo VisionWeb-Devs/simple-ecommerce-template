@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
+import { LucideImageOff } from "lucide-react";
 
 export default function ProductImages({ images, productName }) {
   const [currentImage, setCurrentImage] = useState(images.main_image);
@@ -11,7 +12,7 @@ export default function ProductImages({ images, productName }) {
   return (
     <div className="md:w-1/2 justify-center items-center flex flex-col">
       <div className="w-full justify-center items-center flex mb-4">
-        {currentImage && (
+        {currentImage ? (
           <Image
             src={currentImage.webContentLink}
             alt={productName}
@@ -20,6 +21,11 @@ export default function ProductImages({ images, productName }) {
             className="w-[60%] h-[710px] object-cover"
             priority
           />
+        ) : (
+          <div className="w-[60%] h-[710px]  flex justify-center items-center bg-gray-50 flex-col object-cover">
+            <LucideImageOff size={40} />
+            <h1 className="font-semibold">Images not found</h1>
+          </div>
         )}
       </div>
       <div className="flex gap-4 overflow-x-auto w-full justify-center items-center">
