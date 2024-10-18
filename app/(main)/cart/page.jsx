@@ -1,72 +1,112 @@
 "use client";
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { Trash2 } from "lucide-react";
 import Link from "next/link";
+import { getCartItems } from "@/lib/googleDriveAdmin";
+import { getUserCookie } from "@/lib/actions";
+import { getAdminProduct } from "@/lib/firebase";
+import Image from "next/image";
+import { set } from "zod";
 
-const CartItem = ({ product, quantity, onQuantityChange, onRemove }) => (
-  <div className="flex flex-col sm:flex-row items-center py-4 border-b">
-    <img
-      src={product.image}
-      alt={product.name}
-      className="w-full sm:w-20 h-[500px] sm:h-20 object-cover mb-4 sm:mb-0 sm:mr-4"
-    />
-    <div className="flex-grow text-center sm:text-left mb-4 sm:mb-0">
-      <h3 className="font-semibold">{product.name}</h3>
-      <p className="text-gray-600">DA {product.price.toFixed(2)}</p>
-      <p className="text-sm text-gray-500">Size: {product.size}</p>
+const CartItem = ({
+  productURL,
+  product_id,
+  size,
+  quantity,
+  onQuantityChange,
+  onRemove,
+}) => {
+  const [product, setProduct] = useState(null);
+  const [main_image, setMainImage] = useState(null);
+  useEffect(() => {
+    const fetchProduct = async () => {
+      console.log(product_id);
+      const product = await fetch("/api/productData", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ productURL: productURL }),
+      }).then((res) => res.json());
+
+      const images = await fetch("/api/getProductImages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ product_id: product_id }),
+      }).then((res) => res.json());
+      console.log(images);
+      setMainImage(images.main_image);
+      setProduct(product.product);
+    };
+    fetchProduct();
+  }, []);
+  console.log(main_image);
+  console.log(product);
+  if (!product) return null;
+  return (
+    <div className="flex flex-col sm:flex-row items-center py-4 border-b">
+      {main_image && (
+        <Image
+          src={main_image.webContentLink}
+          height={500}
+          width={500}
+          alt={product.name}
+          className="w-full sm:w-20 h-[500px] sm:h-20 object-cover mb-4 sm:mb-0 sm:mr-4"
+        />
+      )}
+      <div className="flex-grow text-center sm:text-left mb-4 sm:mb-0">
+        <h3 className="font-semibold">{product.name}</h3>
+        <p className="text-gray-600">DA {product.salePrice.toFixed(2)}</p>
+        <p className="text-sm text-gray-500">Size: {size}</p>
+      </div>
+      <div className="flex items-center border mb-4 sm:mb-0">
+        <button
+          // onClick={() => onQuantityChange(quantity - 1)}
+          className="px-2 py-1 rounded text-2xl"
+        >
+          -
+        </button>
+        <input
+          type="text"
+          value={quantity}
+          readOnly
+          className="w-12 text-center mx-2 rounded"
+        />
+        <button
+          // onClick={() => onQuantityChange(quantity + 1)}
+          className="px-2 py-1 rounded text-2xl"
+        >
+          +
+        </button>
+      </div>
+      <div className="flex items-center justify-between w-full sm:w-auto">
+        <button
+          //  onClick={onRemove}
+          className="sm:ml-4"
+        >
+          <Trash2 size={20} />
+        </button>
+        <p className="ml-4 font-semibold">
+          DA {(product.salePrice * quantity).toFixed(2)}
+        </p>
+      </div>
     </div>
-    <div className="flex items-center border mb-4 sm:mb-0">
-      <button
-        onClick={() => onQuantityChange(quantity - 1)}
-        className="px-2 py-1 rounded text-2xl"
-      >
-        -
-      </button>
-      <input
-        type="text"
-        value={quantity}
-        readOnly
-        className="w-12 text-center mx-2 rounded"
-      />
-      <button
-        onClick={() => onQuantityChange(quantity + 1)}
-        className="px-2 py-1 rounded text-2xl"
-      >
-        +
-      </button>
-    </div>
-    <div className="flex items-center justify-between w-full sm:w-auto">
-      <button onClick={onRemove} className="sm:ml-4">
-        <Trash2 size={20} />
-      </button>
-      <p className="ml-4 font-semibold">
-        DA {(product.price * quantity).toFixed(2)}
-      </p>
-    </div>
-  </div>
-);
+  );
+};
 
 const ShoppingCart = () => {
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: "Charcoal SHARK hoodie- Pink",
-      price: 9500.0,
-      size: "XS",
-      image:
-        "https://sitoclothings.shop/cdn/shop/files/s243461973942501215_p60_i1_w3464.webp?v=1719346600&width=300",
-      quantity: 1,
-    },
-    {
-      id: 2,
-      name: "Charcoal SHARK hoodie- Black",
-      price: 8800.0,
-      size: "S",
-      image:
-        "https://sitoclothings.shop/cdn/shop/files/s243461973942501215_p59_i1_w3464.webp?v=1719345950&width=300",
-      quantity: 1,
-    },
-  ]);
+  const [cartItems, setCartItems] = useState(null);
+  useEffect(() => {
+    const fetchCartItems = async () => {
+      const userId = await getUserCookie();
+      const cartItems = await getCartItems(userId);
+      setCartItems(cartItems);
+    };
+    fetchCartItems();
+  }, []);
+  console.log(cartItems);
 
   const handleQuantityChange = (id, newQuantity) => {
     setCartItems(
@@ -80,11 +120,6 @@ const ShoppingCart = () => {
     setCartItems(cartItems.filter((item) => item.id !== id));
   };
 
-  const total = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
-
   return (
     <div className="max-w-5xl mx-auto p-4">
       <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
@@ -92,29 +127,34 @@ const ShoppingCart = () => {
           Your cart
         </h2>
       </div>
-      <div className="mb-4">
-        <div className="hidden sm:flex justify-between text-sm text-gray-600 mb-2">
-          <span>PRODUCT</span>
-          <div className="flex gap-32">
-            <span>QUANTITY</span>
-            <span>TOTAL</span>
+      {cartItems && (
+        <div className="mb-4">
+          <div className="hidden sm:flex justify-between text-sm text-gray-600 mb-2">
+            <span>PRODUCT</span>
+            <div className="flex gap-32">
+              <span>QUANTITY</span>
+              <span>TOTAL</span>
+            </div>
           </div>
+          {cartItems.products.map((item) => (
+            <CartItem
+              key={item.product_url + item.size}
+              productURL={item.product_url}
+              quantity={item.quantity}
+              size={item.product_size}
+              product_id={item.product_id}
+              // onQuantityChange={(newQuantity) =>
+              //   handleQuantityChange(item.id, newQuantity)
+              // }
+              // onRemove={() => handleRemoveItem(item.id)}
+            />
+          ))}
         </div>
-        {cartItems.map((item) => (
-          <CartItem
-            key={item.id}
-            product={item}
-            quantity={item.quantity}
-            onQuantityChange={(newQuantity) =>
-              handleQuantityChange(item.id, newQuantity)
-            }
-            onRemove={() => handleRemoveItem(item.id)}
-          />
-        ))}
-      </div>
+      )}
+      {!cartItems && <p className="text-xl">Your cart is empty</p>}
       <div className="text-right space-y-5">
         <p className="font-semibold">
-          Estimated total: DA {total.toFixed(2)} DZD
+          Estimated total: DA {(100).toFixed(2)} DZD
         </p>
         <div className="flex justify-between">
           <button>

@@ -4,8 +4,8 @@ import { getImages } from "@/lib/googleDriveAdmin";
 
 import { nanoid } from "nanoid";
 import { useSearchParams } from "next/navigation";
-import AddProductFrom from "@/components/admin/addProduct/AddProductFrom";
-import AddProductImagesFrom from "@/components/admin/addProduct/AddProductImagesFrom";
+import AddProductForm from "@/components/admin/addProduct/AddProductForm";
+import AddProductImagesForm from "@/components/admin/addProduct/AddProductImagesForm";
 
 const product_types = [
   {
@@ -38,6 +38,7 @@ const Page = () => {
     description: "",
     productURL: "",
     price: 0.0,
+    salePrice: 0.0,
     available: false,
     variations: [
       {
@@ -65,6 +66,7 @@ const Page = () => {
               productName: data.product.name,
               description: data.product.description,
               price: data.product.price,
+              salePrice: data.product.salePrice,
               productURL: data.product.productURL,
               available: data.product.available,
               variations: data.product.variations,
@@ -98,14 +100,14 @@ const Page = () => {
         </div>
       </div>
       <div className="flex gap-[48px]">
-        <AddProductFrom
+        <AddProductForm
           productData={productData}
           setProductData={setProductData}
           product_types={product_types}
           loading={loading}
           setLoading={setLoading}
         />
-        <AddProductImagesFrom
+        <AddProductImagesForm
           images={images}
           setImages={setImages}
           productData={{

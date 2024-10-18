@@ -9,7 +9,7 @@ const ProductCard = async ({ product }) => {
   const images = await getImages(product.productID);
 
   return (
-    <Link href={`products/${product.name}`}>
+    <Link href={`products/${product.productURL}`}>
       <div className="bg-white p-4 rounded-lg ">
         <div className="relative bg-[#F3F3F3]  shadow ">
           {images.main_image?.webContentLink ? (

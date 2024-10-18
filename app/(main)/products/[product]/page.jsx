@@ -1,7 +1,10 @@
+"use server";
+import CartForm from "@/components/home/product/CartForm";
 import Quantity from "@/components/home/product/Quantity";
 import SimilarItems from "@/components/home/product/SimilarItems";
+import { getUserCookie } from "@/lib/actions";
 import { getAdminProduct } from "@/lib/firebase";
-import { getImages, addToCart } from "@/lib/googleDriveAdmin";
+import { getImages } from "@/lib/googleDriveAdmin";
 import Image from "next/image";
 
 export default async function Page({ params }) {
@@ -9,9 +12,8 @@ export default async function Page({ params }) {
   if (!product) {
     return <div>Product not found</div>;
   }
-  const images = null;
-  // const images = await getImages(product.productID);
-
+  const images = await getImages(product.productID);
+  const userId = await getUserCookie();
   return (
     <div className="w-full lg:px-40 md:px-24 px-12 p-4">
       <div className="flex flex-col md:flex-row gap-8">
@@ -40,62 +42,12 @@ export default async function Page({ params }) {
               </span>
             )} */}
           </div>
-
-          <form className="mb-4" action={addToCart}>
-            <h3 className="font-semibold mb-2">SIZE</h3>
-            <div className="flex flex-wrap gap-2 select-none">
-              {product.variations.length === 1 &&
-                product.variations[0].sizes.map((size) => (
-                  <div key={size.size} className="relative">
-                    <input
-                      type="radio"
-                      name="product_size"
-                      id={`size-${size.size}`}
-                      value={size.size}
-                      disabled={size.quantity === 0}
-                      className="peer hidden"
-                    />
-                    <label
-                      htmlFor={`size-${size.size}`}
-                      className={`
-                        px-3 py-1 border border-main font-medium
-                        peer-checked:bg-main peer-checked:text-white
-                        ${
-                          size.quantity === 0
-                            ? "opacity-50 cursor-not-allowed"
-                            : "cursor-pointer hover:bg-gray-50"
-                        }
-                      `}
-                    >
-                      {size.size}
-                    </label>
-                  </div>
-                ))}
-              {product.variations.length !== 1 && <div>Still in dev</div>}
-            </div>
-
-            <div className="mb-4">
-              <h3 className="font-semibold mb-2">Quantity</h3>
-              {/* <Quantity /> */}
-              <input
-                type="number"
-                className="w-16 h-10 border"
-                name="quantity"
-              />
-            </div>
-
-            <button
-              className="w-full bg-black text-white py-2 px-4 mb-4"
-              type="submit"
-            >
-              Add to cart
-            </button>
-          </form>
+          <CartForm product={product} userId={userId} />
 
           <ul className="list-disc list-inside">{product.description}</ul>
         </div>
       </div>
-      {/* <SimilarItems /> */}
+      <SimilarItems />
     </div>
   );
 }
