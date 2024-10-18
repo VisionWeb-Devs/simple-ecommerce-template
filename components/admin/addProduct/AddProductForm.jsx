@@ -120,7 +120,8 @@ const AddProductForm = ({
           }}
         />
       </div>
-      <div className="flex flex-col gap-[10px]">
+
+      <div className={`flex flex-col gap-[10px]`}>
         <label htmlFor="salePrice" className="text-[20px] font-semibold">
           Product Sale Price
         </label>
@@ -128,8 +129,14 @@ const AddProductForm = ({
           type="text"
           id="salePrice"
           name="salePrice"
+          readOnly={productData.price == 0}
           placeholder={"Product sale price here"}
-          className="border-[1px] border-[#E5E5E5] rounded-[4px] px-[16px] py-[8px] text-[16px]"
+          title={
+            productData.price == 0
+              ? `You need to set a price for the product first`
+              : ""
+          }
+          className={`border-[1px] border-[#E5E5E5] rounded-[4px] px-[16px] py-[8px] text-[16px] `}
           value={productData.salePrice}
           onChange={(e) => {
             setProductData((prev) => ({

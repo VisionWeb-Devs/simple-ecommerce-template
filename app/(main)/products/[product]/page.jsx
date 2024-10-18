@@ -8,7 +8,7 @@ export default async function Page({ params }) {
   if (!product) {
     return <div>Product not found</div>;
   }
-  const userId = await getUserCookie();
+  // const userId = await getUserCookie();
   const images = await getImages(product.productID);
   return (
     <div className="w-full lg:px-40 md:px-24 px-12 p-4">
@@ -17,12 +17,18 @@ export default async function Page({ params }) {
 
         <div className="md:w-1/2">
           <h1 className="text-2xl font-bold mb-4">{product.name}</h1>
-          <div className="mb-6 flex gap-4">
-            <span className="text-2xl font-bold">{product.salePrice} DZD</span>
-            <span className="text-lg line-through font-semibold text-gray-500">
-              {product.price} DZD
-            </span>
-          </div>
+          {product.salePrice || product.salePrice > 0 ? (
+            <div className="mb-6 flex gap-4">
+              <span className="text-2xl font-bold">
+                {product.salePrice} DZD
+              </span>
+              <span className="text-lg line-through font-semibold text-gray-500">
+                {product.price} DZD
+              </span>
+            </div>
+          ) : (
+            <span className="text-2xl font-bold">{product.price} DZD</span>
+          )}
 
           <form className="mb-4" action={addToCart}>
             <h3 className="font-semibold mb-2">SIZE</h3>
