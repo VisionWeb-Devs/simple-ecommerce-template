@@ -1,5 +1,6 @@
 import ProductImages from "@/components/home/product/ProductImages";
 import SimilarItems from "@/components/home/product/SimilarItems";
+import { getUserCookie } from "@/lib/actions";
 import { getAdminProduct } from "@/lib/firebase";
 import { getImages, addToCart } from "@/lib/googleDriveAdmin";
 
@@ -38,6 +39,17 @@ export default async function Page({ params }) {
                       disabled={size.quantity === 0}
                       className="peer hidden"
                     />
+                    <input
+                      type="hidden"
+                      name="product_url"
+                      value={product.productURL}
+                    />
+                    <input
+                      type="hidden"
+                      name="product_id"
+                      value={product.productID}
+                    />
+                    <input type="hidden" name="user_id" value={userId} />
                     <label
                       htmlFor={`size-${size.size}`}
                       className={`
@@ -62,6 +74,7 @@ export default async function Page({ params }) {
               <input
                 type="number"
                 min="1"
+                name="quantity"
                 defaultValue="1"
                 className="border border-gray-300 px-3 py-2 w-20 sele"
               />
