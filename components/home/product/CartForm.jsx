@@ -36,12 +36,12 @@ const CartForm = ({ product, userId }) => {
         {product.variations.length !== 1 && <div>Still in dev</div>}
       </div>
 
-      <div className="mb-4">
+      <div className="mb-4 mt-4">
         <h3 className="font-semibold mb-2">Quantity</h3>
         {/* <Quantity /> */}
         <input
           type="number"
-          className="w-16 h-10 border"
+          className="w-16 h-10 border border-gray-300 rounded-md px-2 text-center focus:outline-none focus:ring-2 focus:ring-main focus:border-transparent select-none"
           name="quantity"
           min="1"
           defaultValue="1"

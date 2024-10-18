@@ -1,11 +1,7 @@
-"use server";
-import CartForm from "@/components/home/product/CartForm";
-import Quantity from "@/components/home/product/Quantity";
+import ProductImages from "@/components/home/product/ProductImages";
 import SimilarItems from "@/components/home/product/SimilarItems";
-import { getUserCookie } from "@/lib/actions";
 import { getAdminProduct } from "@/lib/firebase";
-import { getImages } from "@/lib/googleDriveAdmin";
-import Image from "next/image";
+import { getImages, addToCart } from "@/lib/googleDriveAdmin";
 
 export default async function Page({ params }) {
   const product = await getAdminProduct(params.product?.toString());
@@ -13,36 +9,71 @@ export default async function Page({ params }) {
     return <div>Product not found</div>;
   }
   const images = await getImages(product.productID);
-  const userId = await getUserCookie();
+
   return (
     <div className="w-full lg:px-40 md:px-24 px-12 p-4">
       <div className="flex flex-col md:flex-row gap-8">
-        <div className="md:w-1/2 justify-center items-center flex">
-          {images && (
-            <Image
-              src={images.main_image?.webContentLink}
-              alt={product.name}
-              width={500}
-              height={500}
-              className="w-[500px] h-auto justify-center items-center"
-            />
-          )}
-        </div>
+        <ProductImages images={images} productName={product.name} />
 
         <div className="md:w-1/2">
           <h1 className="text-2xl font-bold mb-4">{product.name}</h1>
-          <div className="mb-4">
-            {/* <span className="text-gray-500 line-through mr-2">
-              {product.price}
-            </span> */}
-            <span className="text-xl font-bold">{product.price}</span>
-            {/* {onSale && (
-              <span className="ml-2 bg-black text-white px-2 py-1 text-sm">
-                Sale
-              </span>
-            )} */}
+          <div className="mb-6 flex gap-4">
+            <span className="text-2xl font-bold">{product.salePrice} DZD</span>
+            <span className="text-lg line-through font-semibold text-gray-500">
+              {product.price} DZD
+            </span>
           </div>
-          <CartForm product={product} userId={userId} />
+
+          <form className="mb-4" action={addToCart}>
+            <h3 className="font-semibold mb-2">SIZE</h3>
+            <div className="flex flex-wrap gap-2 select-none">
+              {product.variations.length === 1 &&
+                product.variations[0].sizes.map((size) => (
+                  <div key={size.size} className="relative">
+                    <input
+                      type="radio"
+                      name="product_size"
+                      id={`size-${size.size}`}
+                      value={size.size}
+                      disabled={size.quantity === 0}
+                      className="peer hidden"
+                    />
+                    <label
+                      htmlFor={`size-${size.size}`}
+                      className={`
+                        px-3 py-1 border border-main font-medium
+                        peer-checked:bg-main peer-checked:text-white
+                        ${
+                          size.quantity === 0
+                            ? "opacity-50 cursor-not-allowed"
+                            : "cursor-pointer hover:bg-gray-50"
+                        }
+                      `}
+                    >
+                      {size.size}
+                    </label>
+                  </div>
+                ))}
+              {product.variations.length !== 1 && <div>Still in dev</div>}
+            </div>
+
+            <div className="mb-6">
+              <h2 className="text-lg font-semibold mb-2">Quantity</h2>
+              <input
+                type="number"
+                min="1"
+                defaultValue="1"
+                className="border border-gray-300 px-3 py-2 w-20 sele"
+              />
+            </div>
+
+            <button
+              className="w-full bg-black text-white py-2 px-4 mb-4"
+              type="submit"
+            >
+              Add to cart
+            </button>
+          </form>
 
           <ul className="list-disc list-inside">{product.description}</ul>
         </div>
