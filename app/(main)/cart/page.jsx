@@ -20,7 +20,6 @@ const CartItem = ({
   const [main_image, setMainImage] = useState(null);
   useEffect(() => {
     const fetchProduct = async () => {
-      console.log(product_id);
       const product = await fetch("/api/productData", {
         method: "POST",
         headers: {
@@ -36,14 +35,11 @@ const CartItem = ({
         },
         body: JSON.stringify({ product_id: product_id }),
       }).then((res) => res.json());
-      console.log(images);
       setMainImage(images.main_image);
       setProduct(product.product);
     };
     fetchProduct();
   }, []);
-  console.log(main_image);
-  console.log(product);
   if (!product) return null;
   return (
     <div className="flex flex-col sm:flex-row items-center py-4 border-b">
@@ -57,13 +53,18 @@ const CartItem = ({
         />
       )}
       <div className="flex-grow text-center sm:text-left mb-4 sm:mb-0">
-        <h3 className="font-semibold">{product.name}</h3>
+        <Link href={`/products/${productURL}`} className="font-semibold">
+          {product.name}
+        </Link>
         <p className="text-gray-600">DA {product.salePrice.toFixed(2)}</p>
         <p className="text-sm text-gray-500">Size: {size}</p>
       </div>
       <div className="flex items-center border mb-4 sm:mb-0">
         <button
-          // onClick={() => onQuantityChange(quantity - 1)}
+          onClick={() => {
+            if (Number(quantity) - 1 === 0) return;
+            onQuantityChange(Number(quantity) - 1);
+          }}
           className="px-2 py-1 rounded text-2xl"
         >
           -
@@ -72,20 +73,20 @@ const CartItem = ({
           type="text"
           value={quantity}
           readOnly
+          min="1"
           className="w-12 text-center mx-2 rounded"
         />
         <button
-          // onClick={() => onQuantityChange(quantity + 1)}
+          onClick={() => {
+            onQuantityChange(Number(quantity) + 1);
+          }}
           className="px-2 py-1 rounded text-2xl"
         >
           +
         </button>
       </div>
       <div className="flex items-center justify-between w-full sm:w-auto">
-        <button
-          //  onClick={onRemove}
-          className="sm:ml-4"
-        >
+        <button onClick={onRemove} className="sm:ml-4">
           <Trash2 size={20} />
         </button>
         <p className="ml-4 font-semibold">
@@ -98,6 +99,8 @@ const CartItem = ({
 
 const ShoppingCart = () => {
   const [cartItems, setCartItems] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   useEffect(() => {
     const fetchCartItems = async () => {
       const userId = await getUserCookie();
@@ -106,18 +109,43 @@ const ShoppingCart = () => {
     };
     fetchCartItems();
   }, []);
-  console.log(cartItems);
 
-  const handleQuantityChange = (id, newQuantity) => {
-    setCartItems(
-      cartItems.map((item) =>
-        item.id === id ? { ...item, quantity: Math.max(1, newQuantity) } : item
-      )
+  const handleQuantityChange = async (id, newQuantity, product) => {
+    setLoading(true);
+    setError("");
+    const userId = await getUserCookie();
+    const res = await fetch("/api/updateCartItem", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        product_id: product.product_id,
+        quantity: newQuantity,
+        product_size: product.product_size,
+        userId: userId,
+      }),
+    }).then((res) => res.json());
+    if (res.message !== "updateCartItem") {
+      setLoading(false);
+      setError(res.message);
+      return;
+    }
+    if (newQuantity === 0) {
+      const updatedCartItems = cartItems.products.filter(
+        (item) => item.product_url + item.product_size !== id
+      );
+      setCartItems({ ...cartItems, products: updatedCartItems });
+      setLoading(false);
+      return;
+    }
+    const updatedCartItems = cartItems.products.map((item) =>
+      item.product_url + item.product_size === id
+        ? { ...item, quantity: newQuantity }
+        : item
     );
-  };
-
-  const handleRemoveItem = (id) => {
-    setCartItems(cartItems.filter((item) => item.id !== id));
+    setCartItems({ ...cartItems, products: updatedCartItems });
+    setLoading(false);
   };
 
   return (
@@ -136,25 +164,42 @@ const ShoppingCart = () => {
               <span>TOTAL</span>
             </div>
           </div>
-          {cartItems.products.map((item) => (
-            <CartItem
-              key={item.product_url + item.size}
-              productURL={item.product_url}
-              quantity={item.quantity}
-              size={item.product_size}
-              product_id={item.product_id}
-              // onQuantityChange={(newQuantity) =>
-              //   handleQuantityChange(item.id, newQuantity)
-              // }
-              // onRemove={() => handleRemoveItem(item.id)}
-            />
-          ))}
+          {cartItems.product?.length != 0 &&
+            cartItems.products.map((item) => (
+              <CartItem
+                key={item.product_url + item.product_size}
+                productURL={item.product_url}
+                quantity={item.quantity}
+                size={item.product_size}
+                product_id={item.product_id}
+                onQuantityChange={(newQuantity) =>
+                  handleQuantityChange(
+                    item.product_url + item.product_size,
+                    newQuantity,
+                    item
+                  )
+                }
+                onRemove={() => {
+                  handleQuantityChange(
+                    item.product_url + item.product_size,
+                    0,
+                    item
+                  );
+                }}
+                disabled={loading}
+              />
+            ))}
         </div>
       )}
       {!cartItems && <p className="text-xl">Your cart is empty</p>}
+      {error && <p className="text-red-500">{error}</p>}
       <div className="text-right space-y-5">
         <p className="font-semibold">
-          Estimated total: DA {(100).toFixed(2)} DZD
+          Estimated total: DA{" "}
+          {cartItems
+            ? cartItems.product && cartItems.products.map().toFixed(2)
+            : "0"}{" "}
+          DZD
         </p>
         <div className="flex justify-between">
           <button>
@@ -165,7 +210,7 @@ const ShoppingCart = () => {
               Continue shopping
             </Link>
           </button>
-          <button>
+          <button disabled={loading}>
             <Link
               href="/checkouts/checkout"
               className="bg-black text-white py-2 px-4 hover:bg-gray-800 transition-colors"
