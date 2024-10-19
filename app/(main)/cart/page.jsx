@@ -56,7 +56,9 @@ const CartItem = ({
         <Link href={`/products/${productURL}`} className="font-semibold">
           {product.name}
         </Link>
-        <p className="text-gray-600">DA {product.salePrice.toFixed(2)}</p>
+        <p className="text-gray-600">
+          DA {product.salePrice ? product.salePrice.toFixed(2) : product.price}
+        </p>
         <p className="text-sm text-gray-500">Size: {size}</p>
       </div>
       <div className="flex items-center border mb-4 sm:mb-0">
@@ -90,7 +92,10 @@ const CartItem = ({
           <Trash2 size={20} />
         </button>
         <p className="ml-4 font-semibold">
-          DA {(product.salePrice * quantity).toFixed(2)}
+          DA{" "}
+          {product.salePrice !== 0
+            ? (product.salePrice * quantity).toFixed(2)
+            : (product.price * quantity).toFixed(2)}
         </p>
       </div>
     </div>
@@ -195,11 +200,7 @@ const ShoppingCart = () => {
       {error && <p className="text-red-500">{error}</p>}
       <div className="text-right space-y-5">
         <p className="font-semibold">
-          Estimated total: DA{" "}
-          {cartItems
-            ? cartItems.product && cartItems.products.map().toFixed(2)
-            : "0"}{" "}
-          DZD
+          Estimated total: DA {cartItems?.products ? "0" : "0"} DZD
         </p>
         <div className="flex justify-between">
           <button>

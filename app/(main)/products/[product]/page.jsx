@@ -9,7 +9,7 @@ export default async function Page({ params }) {
   if (!product) {
     return <div>Product not found</div>;
   }
-  // const userId = await getUserCookie();
+  const userId = await getUserCookie();
   const images = await getImages(product.productID);
   return (
     <div className="w-full lg:px-40 md:px-24 px-12 p-4">

@@ -2,74 +2,13 @@
 import React, { useState, useEffect } from "react";
 import provinces from "../../../../assets/Wilaya_Of_Algeria.json";
 import Link from "next/link";
+import { getUserCookie } from "@/lib/actions";
+import { getCartItems, getImages } from "@/lib/googleDriveAdmin";
+import { getCheckout } from "@/lib/firebase";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 
-const products = [
-  {
-    id: 1,
-    name: "Test1",
-    price: 1250,
-    size: "XL",
-    quantity: 1,
-    image:
-      "https://sitoclothings.shop/cdn/shop/files/s243461973942501215_p59_i1_w3464.webp?v=1719345950&width=300",
-  },
-  {
-    id: 2,
-    name: "Test2",
-    price: 1100,
-    size: "M",
-    quantity: 1,
-    image:
-      "https://sitoclothings.shop/cdn/shop/files/s243461973942501215_p59_i1_w3464.webp?v=1719345950&width=300",
-  },
-  {
-    id: 3,
-    name: "Test3",
-    price: 1450,
-    size: "L",
-    quantity: 1,
-    image:
-      "https://sitoclothings.shop/cdn/shop/files/s243461973942501215_p59_i1_w3464.webp?v=1719345950&width=300",
-  },
-  {
-    id: 4,
-    name: "Test4",
-    price: 1350,
-    size: "XL",
-    quantity: 1,
-    image:
-      "https://sitoclothings.shop/cdn/shop/files/s243461973942501215_p59_i1_w3464.webp?v=1719345950&width=300",
-  },
-  {
-    id: 4,
-    name: "Test4",
-    price: 1350,
-    size: "XL",
-    quantity: 1,
-    image:
-      "https://sitoclothings.shop/cdn/shop/files/s243461973942501215_p59_i1_w3464.webp?v=1719345950&width=300",
-  },
-  {
-    id: 4,
-    name: "Test4",
-    price: 1350,
-    size: "XL",
-    quantity: 1,
-    image:
-      "https://sitoclothings.shop/cdn/shop/files/s243461973942501215_p59_i1_w3464.webp?v=1719345950&width=300",
-  },
-  {
-    id: 4,
-    name: "Test4",
-    price: 1350,
-    size: "XL",
-    quantity: 1,
-    image:
-      "https://sitoclothings.shop/cdn/shop/files/s243461973942501215_p59_i1_w3464.webp?v=1719345950&width=300",
-  },
-];
-
-const calculateSubtotal = () => {
+const calculateSubtotal = (products) => {
   return products.reduce(
     (total, product) => total + product.price * product.quantity,
     0
@@ -77,6 +16,7 @@ const calculateSubtotal = () => {
 };
 
 const CheckoutPage = () => {
+  const router = useRouter();
   const [userInfos, setUserInfos] = useState({
     firstName: "",
     lastName: "",
@@ -84,15 +24,32 @@ const CheckoutPage = () => {
     phoneNumber: "",
     address: "",
     wilaya: "",
-    postalCode: "" || null,
+    postalCode: "",
     promoCode: "",
   });
 
+  const [products, setProducts] = useState([]);
   const [orderSummary, setOrderSummary] = useState({
-    subtotal: calculateSubtotal(),
-    shipping: 0,
-    total: calculateSubtotal(),
+    // subtotal: products ? calculateSubtotal(products) : 0,
+    // shipping: 0,
+    total: 0,
   });
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const userId = await getUserCookie();
+      const cartItems = await getCheckout(userId);
+
+      setProducts(cartItems);
+    };
+    fetchProducts();
+  }, []);
+
+  useEffect(() => {
+    setOrderSummary((prevSummary) => ({
+      ...prevSummary,
+      total: products ? calculateSubtotal(products) : 0,
+    }));
+  }, [products]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -117,12 +74,27 @@ const CheckoutPage = () => {
     }
   };
 
-  useEffect(() => {
-    setOrderSummary((prevSummary) => ({
-      ...prevSummary,
-      total: prevSummary.subtotal + prevSummary.shipping,
-    }));
-  }, [orderSummary.subtotal, orderSummary.shipping]);
+  const handleCheckout = async () => {
+    const userId = await getUserCookie();
+    const res = await fetch("/api/checkout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId,
+        userInfos,
+      }),
+    }).then((res) => res.json());
+    // if (res.message !== "checkout") {
+    //   console.log(res.message);
+    //   return;
+    // }
+    if (res.status === 200) {
+      router.push(`/checkouts/checkout/${res.order_id}`);
+    }
+    console.log(res);
+  };
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -208,43 +180,46 @@ const CheckoutPage = () => {
           <div className="bg-white rounded-lg p-4 ">
             <h2 className="font-bold mb-4 text-xl">BAG SUMMARY</h2>
             <div className="max-h-96 overflow-y-auto ">
-              {products.map((product) => (
-                <div
-                  key={product.id}
-                  className="flex flex-col sm:flex-row md:items-start sm:justify-center items-center  w-full mb-4"
-                >
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="mb-4 sm:mb-0 sm:mr-4 md:h-36 md:w-36 h-52 w-52 object-cover rounded"
-                  />
-                  <div className="w-full justify-center items-center md:justify-start md:items-start flex flex-col">
-                    <p className="font-bold">{product.name}</p>
-                    <p className="text-sm text-gray-600">{product.price} DZD</p>
-                    <p className="text-sm text-gray-600">
-                      Size: {product.size}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      Quantity: {product.quantity}
-                    </p>
-                    <div className="flex mt-2">
-                      <button className="text-blue-600">Remove</button>
+              {products?.map((product) => {
+                return (
+                  <div
+                    key={product.id + product.size}
+                    className="flex flex-col sm:flex-row md:items-start sm:justify-center items-center  w-full mb-4"
+                  >
+                    <Image
+                      src={product.image.webContentLink}
+                      alt={product.name}
+                      width={208} // 52 * 4 for h-52 and w-52
+                      height={208} // Set to the same value as width for consistency
+                      className="mb-4 sm:mb-0 sm:mr-4 md:h-36 md:w-36 h-52 w-52 object-cover rounded"
+                    />
+                    <div className="w-full justify-center items-center md:justify-start md:items-start flex flex-col">
+                      <p className="font-bold">{product.name}</p>
+                      <p className="text-sm text-gray-600">
+                        {product.price} DZD
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Size: {product.size}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Quantity: {product.quantity}
+                      </p>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
           <div className="border p-4 bg-white rounded-lg mb-8">
             <h2 className="font-bold mb-4 text-xl">ORDER SUMMARY</h2>
-            <div className="flex justify-between mb-2">
+            {/* <div className="flex justify-between mb-2">
               <span>Subtotal</span>
               <span>{orderSummary.subtotal.toFixed(2)} DZD</span>
-            </div>
-            <div className="flex justify-between mb-4">
+            </div> */}
+            {/* <div className="flex justify-between mb-4">
               <span>Shipping (1 item)</span>
               <span>{orderSummary.shipping.toFixed(2)} DZD</span>
-            </div>
+            </div> */}
             <div className="flex justify-between font-bold">
               <span>TOTAL</span>
               <span>{orderSummary.total.toFixed(2)} DZD</span>
@@ -270,12 +245,12 @@ const CheckoutPage = () => {
       </div>
 
       <div className="flex justify-center items-center w-full py-14">
-        <Link
-          href="checkout/1"
+        <button
+          onClick={handleCheckout}
           className="bg-gray-800 text-gray-100 hover:bg-black text-2xl rounded transition-all duration-500 px-11 py-4"
         >
           Checkout
-        </Link>
+        </button>
       </div>
     </div>
   );
