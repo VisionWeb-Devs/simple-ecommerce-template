@@ -7,7 +7,6 @@ import { motion } from "framer-motion";
 
 const ProductWrapper = ({ productData }) => {
   const { name, price, productURL, image, salePrice } = productData;
-  console.log(productData);
   return (
     <motion.div
       whileHover={{ y: -10 }}

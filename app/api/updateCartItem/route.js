@@ -2,7 +2,8 @@ import { db } from "@/lib/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 
 export async function POST(request) {
-  const { product_id, quantity, product_size, userId } = await request.json();
+  const { product_id, quantity, product_size, userId, product_variation } =
+    await request.json();
 
   const docRef = doc(db, "cart", userId);
   const docSnap = await getDoc(docRef);
@@ -12,7 +13,9 @@ export async function POST(request) {
   const cart = docSnap.data();
   const cartItem = cart.products.find(
     (item) =>
-      item.product_id === product_id && item.product_size === product_size
+      item.product_id === product_id &&
+      item.product_size === product_size &&
+      item.product_variation === product_variation
   );
   if (!cartItem) {
     return Response.json({ message: "product not found" }, { status: 404 });
@@ -20,7 +23,9 @@ export async function POST(request) {
   if (quantity === 0) {
     cart.products = cart.products.filter((item) => {
       return (
-        item.product_id !== product_id || item.product_size !== product_size
+        item.product_id !== product_id ||
+        item.product_size !== product_size ||
+        item.product_variation !== product_variation
       );
     });
   } else {

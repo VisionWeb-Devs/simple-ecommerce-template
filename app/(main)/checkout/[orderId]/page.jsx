@@ -1,35 +1,27 @@
 "use client";
 import React, { useEffect, useState } from "react";
 
-const OrderConfirmationPage = () => {
-  const [orderDetails, setOrderDetails] = useState({});
-  const exampleOrder = {
-    orderNumber: "1",
-    date: new Date().toLocaleDateString(),
-    total: "4300 ",
-    paymentMethod: "Cash on delivery",
-    products: [
-      {
-        name: "Test1",
-        size: "L",
-        price: "4300 ",
-        Quantiy: 1,
-      },
-    ],
-    subtotal: "7565",
-    shipping: {
-      cost: "900 ",
-      method: "via Domicile",
-    },
-    address: "Beni Aziz",
-    userName: "vision",
-    phoneNumber: "0123456789",
-  };
+const OrderConfirmationPage = ({ params }) => {
+  const [orderDetails, setOrderDetails] = useState([]);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    setOrderDetails(exampleOrder);
+    const fetchOrderDetails = async () => {
+      const res = await fetch("/api/orderDetails", {
+        method: "POST",
+        body: JSON.stringify({ orderId: params.orderId }),
+      }).then((res) => res.json());
+      if (res.status === 200) {
+        setOrderDetails(res.order_details);
+      }
+      if (res.status === 404) {
+        setError(res.message);
+      }
+    };
+    fetchOrderDetails();
   }, []);
-
+  if (error) return <div>{error}</div>;
+  if (orderDetails.length === 0) return <div>Loading...</div>;
   return (
     <div className="container mx-auto px-4 py-16">
       <div className="text-center mb-8">
@@ -40,19 +32,19 @@ const OrderConfirmationPage = () => {
           <div className="grid grid-cols-4 gap-4 text-md">
             <div>
               <p className="font-semibold">Order number:</p>
-              <p>{orderDetails.orderNumber}</p>
+              <p>{orderDetails.order_id}</p>
             </div>
             <div>
               <p className="font-semibold">Date:</p>
-              <p>{orderDetails.date}</p>
+              <p>{new Date(orderDetails.created_at).toLocaleString()}</p>
             </div>
             <div>
               <p className="font-semibold">Total:</p>
-              <p>{orderDetails.total} DZD</p>
+              <p>{orderDetails.order_total} DZD</p>
             </div>
             <div>
               <p className="font-semibold">Payment method:</p>
-              <p>{orderDetails.paymentMethod}</p>
+              <p>{orderDetails.payment_method}</p>
             </div>
           </div>
         </div>
@@ -68,21 +60,23 @@ const OrderConfirmationPage = () => {
             </tr>
           </thead>
           <tbody>
-            {orderDetails.products?.map((product, index) => (
+            {orderDetails.order_items?.map((product, index) => (
               <tr key={index} className="border-b">
                 <td className="py-2">
-                  {product.name} x {product.Quantiy}
+                  {product.product_name} x {product.quantity}
                   <br />
                   <span className="text-sm text-gray-600">
                     Size: {product.size}
                   </span>
                 </td>
-                <td className="text-right py-2">{product.price} DZD</td>
+                <td className="text-right py-2">{product.total} DZD</td>
               </tr>
             ))}
             <tr className="border-b">
               <td className="py-2">Subtotal:</td>
-              <td className="text-right py-2">{orderDetails.subtotal} DZD</td>
+              <td className="text-right py-2">
+                {orderDetails.order_subtotal} DZD
+              </td>
             </tr>
             <tr className="border-b">
               <td className="py-2">Shipping:</td>
@@ -96,12 +90,12 @@ const OrderConfirmationPage = () => {
             </tr>
             <tr className="border-b">
               <td className="py-2">Payment method:</td>
-              <td className="text-right py-2">{orderDetails.paymentMethod}</td>
+              <td className="text-right py-2">{orderDetails.payment_method}</td>
             </tr>
             <tr className="border-b">
               <td className="py-2 font-bold">Total:</td>
               <td className="text-right py-2 font-bold">
-                {orderDetails.total} DZD
+                {orderDetails.order_total} DZD
               </td>
             </tr>
           </tbody>
@@ -110,14 +104,15 @@ const OrderConfirmationPage = () => {
 
       <div className="text-lg">
         <p>
-          <span className="font-semibold">Address:</span> {orderDetails.address}
+          <span className="font-semibold">Address:</span> {orderDetails.street}
         </p>
         <p>
-          <span className="font-semibold">Name:</span> {orderDetails.userName}
+          <span className="font-semibold">Name:</span>{" "}
+          {`${orderDetails.firstname} ${orderDetails.lastname}`}
         </p>
         <p>
           <span className="font-semibold">Phone:</span>{" "}
-          {orderDetails.phoneNumber}
+          {orderDetails.phone_number}
         </p>
       </div>
     </div>
