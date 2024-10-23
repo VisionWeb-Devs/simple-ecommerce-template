@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { getImages } from "@/lib/googleDriveAdmin";
-
 import { nanoid } from "nanoid";
 import { useSearchParams } from "next/navigation";
 import AddProductForm from "@/components/admin/addProduct/AddProductForm";
