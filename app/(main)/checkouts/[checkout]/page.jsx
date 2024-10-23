@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 
 const calculateSubtotal = (products) => {
   return products.reduce(
-    (total, product) => total + product.price * product.quantity,
+    (total, product) => total + product.price * Number(product.quantity),
     0
   );
 };
@@ -86,14 +86,13 @@ const CheckoutPage = () => {
         userInfos,
       }),
     }).then((res) => res.json());
-    // if (res.message !== "checkout") {
-    //   console.log(res.message);
-    //   return;
-    // }
-    if (res.status === 200) {
-      router.push(`/checkouts/checkout/${res.order_id}`);
+    if (res.status !== 200) {
+      console.log(res);
+      return;
     }
-    console.log(res);
+    // if (res.status === 200) {
+    //   router.push(`/checkouts/checkout/${res.order_id}`);
+    // }
   };
 
   return (

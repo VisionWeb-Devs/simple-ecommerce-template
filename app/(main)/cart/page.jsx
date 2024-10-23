@@ -4,43 +4,48 @@ import { Trash2 } from "lucide-react";
 import Link from "next/link";
 import { getCartItems } from "@/lib/googleDriveAdmin";
 import { getUserCookie } from "@/lib/actions";
-import { getAdminProduct } from "@/lib/firebase";
+import { getAdminProduct, getCheckout } from "@/lib/firebase";
 import Image from "next/image";
 import { set } from "zod";
 
 const CartItem = ({
   productURL,
-  product_id,
-  size,
   quantity,
+  size,
+  main_image,
+  product_id,
+  price,
+  name,
   onQuantityChange,
   onRemove,
+  disabled,
 }) => {
-  const [product, setProduct] = useState(null);
-  const [main_image, setMainImage] = useState(null);
-  useEffect(() => {
-    const fetchProduct = async () => {
-      const product = await fetch("/api/productData", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ productURL: productURL }),
-      }).then((res) => res.json());
+  // const [product, setProduct] = useState(null);
+  // const [main_image, setMainImage] = useState(null);
+  // useEffect(() => {
+  //   const fetchProduct = async () => {
+  //     const product = await fetch("/api/productData", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({ productURL: productURL }),
+  //     }).then((res) => res.json());
 
-      const images = await fetch("/api/getProductImages", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ product_id: product_id }),
-      }).then((res) => res.json());
-      setMainImage(images.main_image);
-      setProduct(product.product);
-    };
-    fetchProduct();
-  }, []);
-  if (!product) return null;
+  //     const images = await fetch("/api/getProductImages", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({ product_id: product_id }),
+  //     }).then((res) => res.json());
+  //     setMainImage(images.main_image);
+  //     setProduct(product.product);
+  //   };
+  //   fetchProduct();
+  // }, []);
+
+  if (!product_id) return null;
   return (
     <div className="flex flex-col sm:flex-row items-center py-4 border-b">
       {main_image && (
@@ -48,17 +53,15 @@ const CartItem = ({
           src={main_image.webContentLink}
           height={500}
           width={500}
-          alt={product.name}
+          alt={name}
           className="w-full sm:w-20 h-[500px] sm:h-20 object-cover mb-4 sm:mb-0 sm:mr-4"
         />
       )}
       <div className="flex-grow text-center sm:text-left mb-4 sm:mb-0">
         <Link href={`/products/${productURL}`} className="font-semibold">
-          {product.name}
+          {name}
         </Link>
-        <p className="text-gray-600">
-          DA {product.salePrice ? product.salePrice.toFixed(2) : product.price}
-        </p>
+        <p className="text-gray-600">DA {price.toFixed(2)}</p>
         <p className="text-sm text-gray-500">Size: {size}</p>
       </div>
       <div className="flex items-center border mb-4 sm:mb-0">
@@ -91,12 +94,7 @@ const CartItem = ({
         <button onClick={onRemove} className="sm:ml-4">
           <Trash2 size={20} />
         </button>
-        <p className="ml-4 font-semibold">
-          DA{" "}
-          {product.salePrice !== 0
-            ? (product.salePrice * quantity).toFixed(2)
-            : (product.price * quantity).toFixed(2)}
-        </p>
+        <p className="ml-4 font-semibold">DA {(price * quantity).toFixed(2)}</p>
       </div>
     </div>
   );
@@ -137,19 +135,19 @@ const ShoppingCart = () => {
       return;
     }
     if (newQuantity === 0) {
-      const updatedCartItems = cartItems.products.filter(
+      const updatedCartItems = cartItems.filter(
         (item) => item.product_url + item.product_size !== id
       );
-      setCartItems({ ...cartItems, products: updatedCartItems });
+      setCartItems(updatedCartItems);
       setLoading(false);
       return;
     }
-    const updatedCartItems = cartItems.products.map((item) =>
+    const updatedCartItems = cartItems.map((item) =>
       item.product_url + item.product_size === id
         ? { ...item, quantity: newQuantity }
         : item
     );
-    setCartItems({ ...cartItems, products: updatedCartItems });
+    setCartItems(updatedCartItems);
     setLoading(false);
   };
 
@@ -169,14 +167,17 @@ const ShoppingCart = () => {
               <span>TOTAL</span>
             </div>
           </div>
-          {cartItems.product?.length != 0 &&
-            cartItems.products.map((item) => (
+          {cartItems.length != 0 &&
+            cartItems.map((item) => (
               <CartItem
                 key={item.product_url + item.product_size}
                 productURL={item.product_url}
                 quantity={item.quantity}
                 size={item.product_size}
                 product_id={item.product_id}
+                main_image={item.main_image}
+                price={item.price}
+                name={item.name}
                 onQuantityChange={(newQuantity) =>
                   handleQuantityChange(
                     item.product_url + item.product_size,
@@ -200,7 +201,13 @@ const ShoppingCart = () => {
       {error && <p className="text-red-500">{error}</p>}
       <div className="text-right space-y-5">
         <p className="font-semibold">
-          Estimated total: DA {cartItems?.products ? "0" : "0"} DZD
+          Estimated total:{" "}
+          {cartItems?.reduce(
+            (total, product) =>
+              total + product.price * Number(product.quantity),
+            0
+          )}{" "}
+          DA
         </p>
         <div className="flex justify-between">
           <button>
@@ -214,7 +221,7 @@ const ShoppingCart = () => {
           <button disabled={loading}>
             <Link
               href="/checkouts/checkout"
-              className="bg-black text-white py-2 px-4 hover:bg-gray-800 transition-colors"
+              className="bg-main text-white py-2 px-4 hover:bg-gray-800 transition-colors disabled:cursor-not-allowed disabled:bg-gray-400"
             >
               Proceed to checkout
             </Link>

@@ -1,4 +1,5 @@
 import { getCheckout } from "@/lib/firebase";
+import { placeOrder } from "@/lib/googleDriveAdmin";
 import { nanoid } from "nanoid";
 
 const calculateSubtotal = (products) => {
@@ -13,15 +14,22 @@ export async function POST(request) {
   const order_id = nanoid();
   const cartItems = await getCheckout(userId);
   const orderDetails = {
+    order_id: order_id,
     products: cartItems,
     subtotal: calculateSubtotal(cartItems),
-    shipping: userInfos.shipping,
-    total: calculateSubtotal(cartItems) + userInfos.shipping,
+    total: calculateSubtotal(cartItems),
     address: userInfos.address,
-    userName: userInfos.userName,
-    phoneNumber: userInfos.phoneNumber,
-    paymentMethod: userInfos.paymentMethod,
+    firstname: userInfos.firstName,
+    lastname: userInfos.lastName,
+    phone_number: userInfos.phoneNumber,
+    email: userInfos.email,
+    wilaya: userInfos.wilaya,
+    postal_code: userInfos.postalCode,
+    date: new Date(),
   };
+
+  await placeOrder(orderDetails);
+
   return Response.json({
     status: 200,
     order_id: order_id,
