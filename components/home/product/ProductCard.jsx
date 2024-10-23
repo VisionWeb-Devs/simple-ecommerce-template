@@ -16,7 +16,7 @@ const ProductCard = ({ product }) => {
           {product.main_image ? (
             <Image
               src={product.main_image}
-              alt={name}
+              alt={product.name}
               width={300}
               height={300}
               className="w-full h-80 object-cover transition-transform duration-500 ease-in-out hover:scale-105 p-3"
