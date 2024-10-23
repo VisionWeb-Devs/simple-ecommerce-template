@@ -8,7 +8,7 @@ import {
 import { LucideX } from "lucide-react";
 import Image from "next/image";
 
-const AddProductImagesFrom = ({ images, setImages, productData, loading }) => {
+const AddProductImagesForm = ({ images, setImages, productData, loading }) => {
   const handleImageUpload = async (e) => {
     if (e.target.files.length === 0) return;
 
@@ -282,4 +282,4 @@ const AddProductImagesFrom = ({ images, setImages, productData, loading }) => {
   );
 };
 
-export default AddProductImagesFrom;
+export default AddProductImagesForm;

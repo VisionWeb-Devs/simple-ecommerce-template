@@ -69,21 +69,19 @@ const ProductCard = ({
 );
 
 const ProductGrid = async () => {
-  let products = [];
   const res = await getAdminProducts();
-  for (const product of res) {
-    const images = await getImages(product.productID);
-    if (!images) {
-      continue;
-    }
-    products.push({
-      ...product,
-      main_image: images.images.filter((image) =>
-        image.name.includes("main_")
-      )[0],
-      images: images.images,
-    });
-  }
+  const products = await Promise.all(
+    res.map(async (product) => {
+      const images = await getImages(product.productID);
+
+      return {
+        ...product,
+        main_image: images.images.find((image) => image.name.includes("main_")),
+        images: images.images,
+      };
+    })
+  );
+
   return (
     <div className="mx-auto p-4 w-full bg-gray-50">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">

@@ -3,8 +3,8 @@ import React, { useState, useEffect } from "react";
 import { getImages } from "@/lib/googleDriveAdmin";
 import { nanoid } from "nanoid";
 import { useSearchParams } from "next/navigation";
-import AddProductFrom from "@/components/admin/addProduct/AddProductFrom";
-import AddProductImagesFrom from "@/components/admin/addProduct/AddProductImagesFrom";
+import AddProductForm from "@/components/admin/addProduct/AddProductForm";
+import AddProductImagesForm from "@/components/admin/addProduct/AddProductImagesForm";
 
 const product_types = [
   {
@@ -102,7 +102,7 @@ const Page = () => {
 
       <div className="flex flex-col-reverse lg:flex-row gap-8 flex-grow h-full min-h-screen ">
         <div className="w-full lg:w-1/2 flex-grow h-full">
-          <AddProductFrom
+          <AddProductForm
             productData={productData}
             setProductData={setProductData}
             product_types={product_types}
@@ -111,7 +111,7 @@ const Page = () => {
           />
         </div>
         <div className="w-full lg:w-1/2 h-full flex-grow">
-          <AddProductImagesFrom
+          <AddProductImagesForm
             images={images}
             setImages={setImages}
             productData={{

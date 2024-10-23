@@ -1,0 +1,4 @@
+[[headers]]
+  for = "admin/products/*"  # Adjust this path to your actual product page route
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"

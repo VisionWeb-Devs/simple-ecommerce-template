@@ -12,7 +12,6 @@ export const Header = ({}) => {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleSearch = () => setIsSearchOpen(!isSearchOpen);
   const handleSearchChange = (e) => setSearchBarValue(e.target.value);
-  console.log(searchBarValue);
   return (
     <header className="bg-white border-b border-gray-200">
       <div
