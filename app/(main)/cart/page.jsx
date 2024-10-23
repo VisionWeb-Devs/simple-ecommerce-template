@@ -20,31 +20,6 @@ const CartItem = ({
   onRemove,
   disabled,
 }) => {
-  // const [product, setProduct] = useState(null);
-  // const [main_image, setMainImage] = useState(null);
-  // useEffect(() => {
-  //   const fetchProduct = async () => {
-  //     const product = await fetch("/api/productData", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({ productURL: productURL }),
-  //     }).then((res) => res.json());
-
-  //     const images = await fetch("/api/getProductImages", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({ product_id: product_id }),
-  //     }).then((res) => res.json());
-  //     setMainImage(images.main_image);
-  //     setProduct(product.product);
-  //   };
-  //   fetchProduct();
-  // }, []);
-
   if (!product_id) return null;
   return (
     <div className="flex flex-col sm:flex-row items-center py-4 border-b">
@@ -101,7 +76,7 @@ const CartItem = ({
 };
 
 const ShoppingCart = () => {
-  const [cartItems, setCartItems] = useState(null);
+  const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   useEffect(() => {
@@ -127,6 +102,7 @@ const ShoppingCart = () => {
         quantity: newQuantity,
         product_size: product.product_size,
         userId: userId,
+        product_variation: product.product_variation,
       }),
     }).then((res) => res.json());
     if (res.message !== "updateCartItem") {
@@ -136,21 +112,21 @@ const ShoppingCart = () => {
     }
     if (newQuantity === 0) {
       const updatedCartItems = cartItems.filter(
-        (item) => item.product_url + item.product_size !== id
+        (item) =>
+          item.product_url + item.product_size + item.product_variation !== id
       );
       setCartItems(updatedCartItems);
       setLoading(false);
       return;
     }
     const updatedCartItems = cartItems.map((item) =>
-      item.product_url + item.product_size === id
+      item.product_url + item.product_size + item.product_variation === id
         ? { ...item, quantity: newQuantity }
         : item
     );
     setCartItems(updatedCartItems);
     setLoading(false);
   };
-
   return (
     <div className="max-w-5xl mx-auto p-4">
       <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
@@ -158,7 +134,7 @@ const ShoppingCart = () => {
           Your cart
         </h2>
       </div>
-      {cartItems && (
+      {cartItems.length !== 0 && (
         <div className="mb-4">
           <div className="hidden sm:flex justify-between text-sm text-gray-600 mb-2">
             <span>PRODUCT</span>
@@ -167,10 +143,12 @@ const ShoppingCart = () => {
               <span>TOTAL</span>
             </div>
           </div>
-          {cartItems.length != 0 &&
+          {cartItems.length !== 0 &&
             cartItems.map((item) => (
               <CartItem
-                key={item.product_url + item.product_size}
+                key={
+                  item.product_url + item.product_size + item.product_variation
+                }
                 productURL={item.product_url}
                 quantity={item.quantity}
                 size={item.product_size}
@@ -180,14 +158,18 @@ const ShoppingCart = () => {
                 name={item.name}
                 onQuantityChange={(newQuantity) =>
                   handleQuantityChange(
-                    item.product_url + item.product_size,
+                    item.product_url +
+                      item.product_size +
+                      item.product_variation,
                     newQuantity,
                     item
                   )
                 }
                 onRemove={() => {
                   handleQuantityChange(
-                    item.product_url + item.product_size,
+                    item.product_url +
+                      item.product_size +
+                      item.product_variation,
                     0,
                     item
                   );
@@ -197,18 +179,20 @@ const ShoppingCart = () => {
             ))}
         </div>
       )}
-      {!cartItems && <p className="text-xl">Your cart is empty</p>}
+      {cartItems.length === 0 && <p className="text-xl">Your cart is empty</p>}
       {error && <p className="text-red-500">{error}</p>}
-      <div className="text-right space-y-5">
-        <p className="font-semibold">
-          Estimated total:{" "}
-          {cartItems?.reduce(
-            (total, product) =>
-              total + product.price * Number(product.quantity),
-            0
-          )}{" "}
-          DA
-        </p>
+      <div className="text-right space-y-5 mt-5">
+        {cartItems.length !== 0 && (
+          <p className="font-semibold">
+            Estimated total:{" "}
+            {cartItems?.reduce(
+              (total, product) =>
+                total + product.price * Number(product.quantity),
+              0
+            )}{" "}
+            DA
+          </p>
+        )}
         <div className="flex justify-between">
           <button>
             <Link
@@ -218,14 +202,16 @@ const ShoppingCart = () => {
               Continue shopping
             </Link>
           </button>
-          <button disabled={loading}>
-            <Link
-              href="/checkouts/checkout"
-              className="bg-main text-white py-2 px-4 hover:bg-gray-800 transition-colors disabled:cursor-not-allowed disabled:bg-gray-400"
-            >
-              Proceed to checkout
-            </Link>
-          </button>
+          {cartItems.length !== 0 && (
+            <button disabled={loading}>
+              <Link
+                href="/checkout"
+                className="bg-main text-white py-2 px-4 hover:bg-gray-800 transition-colors disabled:cursor-not-allowed disabled:bg-gray-400"
+              >
+                Proceed to checkout
+              </Link>
+            </button>
+          )}
         </div>
       </div>
     </div>

@@ -1,9 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import provinces from "../../../../assets/Wilaya_Of_Algeria.json";
-import Link from "next/link";
+import provinces from "@/assets/Wilaya_Of_Algeria.json";
 import { getUserCookie } from "@/lib/actions";
-import { getCartItems, getImages } from "@/lib/googleDriveAdmin";
 import { getCheckout } from "@/lib/firebase";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -22,7 +20,7 @@ const CheckoutPage = () => {
     lastName: "",
     email: "",
     phoneNumber: "",
-    address: "",
+    street: "",
     wilaya: "",
     postalCode: "",
     promoCode: "",
@@ -30,14 +28,15 @@ const CheckoutPage = () => {
 
   const [products, setProducts] = useState([]);
   const [orderSummary, setOrderSummary] = useState({
-    // subtotal: products ? calculateSubtotal(products) : 0,
-    // shipping: 0,
+    subtotal: 0,
+    shipping: 0,
     total: 0,
   });
   useEffect(() => {
     const fetchProducts = async () => {
       const userId = await getUserCookie();
       const cartItems = await getCheckout(userId);
+      if (cartItems.length === 0) router.push("/cart");
 
       setProducts(cartItems);
     };
@@ -47,6 +46,7 @@ const CheckoutPage = () => {
   useEffect(() => {
     setOrderSummary((prevSummary) => ({
       ...prevSummary,
+      subtotal: products ? calculateSubtotal(products) : 0,
       total: products ? calculateSubtotal(products) : 0,
     }));
   }, [products]);
@@ -90,9 +90,9 @@ const CheckoutPage = () => {
       console.log(res);
       return;
     }
-    // if (res.status === 200) {
-    //   router.push(`/checkouts/checkout/${res.order_id}`);
-    // }
+    if (res.status === 200) {
+      router.push(`/checkout/${res.body.order_id}`);
+    }
   };
 
   return (
@@ -144,8 +144,8 @@ const CheckoutPage = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <input
                 type="text"
-                name="address"
-                value={userInfos.address}
+                name="street"
+                value={userInfos.street}
                 onChange={handleInputChange}
                 placeholder="Address *"
                 className="p-2 border rounded w-full"
@@ -188,8 +188,8 @@ const CheckoutPage = () => {
                     <Image
                       src={product.image.webContentLink}
                       alt={product.name}
-                      width={208} // 52 * 4 for h-52 and w-52
-                      height={208} // Set to the same value as width for consistency
+                      width={208}
+                      height={208}
                       className="mb-4 sm:mb-0 sm:mr-4 md:h-36 md:w-36 h-52 w-52 object-cover rounded"
                     />
                     <div className="w-full justify-center items-center md:justify-start md:items-start flex flex-col">
@@ -211,14 +211,14 @@ const CheckoutPage = () => {
           </div>
           <div className="border p-4 bg-white rounded-lg mb-8">
             <h2 className="font-bold mb-4 text-xl">ORDER SUMMARY</h2>
-            {/* <div className="flex justify-between mb-2">
+            <div className="flex justify-between mb-2">
               <span>Subtotal</span>
               <span>{orderSummary.subtotal.toFixed(2)} DZD</span>
-            </div> */}
-            {/* <div className="flex justify-between mb-4">
+            </div>
+            <div className="flex justify-between mb-4">
               <span>Shipping (1 item)</span>
               <span>{orderSummary.shipping.toFixed(2)} DZD</span>
-            </div> */}
+            </div>
             <div className="flex justify-between font-bold">
               <span>TOTAL</span>
               <span>{orderSummary.total.toFixed(2)} DZD</span>
