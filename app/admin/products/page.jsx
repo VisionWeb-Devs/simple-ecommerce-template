@@ -41,8 +41,12 @@ const ProductCard = ({
         <div className="flex flex-col">
           <h3 className="font-semibold text-xl sm:text-2xl">{name}</h3>
           <div className="flex gap-4 sm:gap-8 mt-2">
-            <p className="font-bold text-3xl sm:text-2xl">{salePrice}DA</p>
-            {price && (
+            {
+              <p className="font-bold text-3xl sm:text-2xl">
+                {salePrice === 0 ? price : salePrice}DA
+              </p>
+            }
+            {salePrice !== 0 && (
               <p className="font-bold text-opacity-50 text-black line-through text-xl sm:text-xl">
                 {price}DA
               </p>

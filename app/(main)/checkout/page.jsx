@@ -32,6 +32,7 @@ const CheckoutPage = () => {
     shipping: 0,
     total: 0,
   });
+
   useEffect(() => {
     const fetchProducts = async () => {
       const userId = await getUserCookie();
@@ -94,7 +95,17 @@ const CheckoutPage = () => {
       router.push(`/checkout/${res.body.order_id}`);
     }
   };
-
+  const isFormValid = () => {
+    return (
+      userInfos.firstName.trim() !== "" &&
+      userInfos.lastName.trim() !== "" &&
+      userInfos.email.trim() !== "" &&
+      userInfos.phoneNumber.trim() !== "" &&
+      userInfos.street.trim() !== "" &&
+      userInfos.wilaya !== "" &&
+      products.length > 0
+    );
+  };
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
@@ -182,7 +193,7 @@ const CheckoutPage = () => {
               {products?.map((product) => {
                 return (
                   <div
-                    key={product.id + product.size}
+                    key={product.id + product.size + product.product_variation}
                     className="flex flex-col sm:flex-row md:items-start sm:justify-center items-center  w-full mb-4"
                   >
                     <Image
@@ -199,6 +210,9 @@ const CheckoutPage = () => {
                       </p>
                       <p className="text-sm text-gray-600">
                         Size: {product.size}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Variation: {product.product_variation}
                       </p>
                       <p className="text-sm text-gray-600">
                         Quantity: {product.quantity}
@@ -246,7 +260,13 @@ const CheckoutPage = () => {
       <div className="flex justify-center items-center w-full py-14">
         <button
           onClick={handleCheckout}
-          className="bg-gray-800 text-gray-100 hover:bg-black text-2xl rounded transition-all duration-500 px-11 py-4"
+          disabled={!isFormValid()}
+          title={`${isFormValid() ? "Checkout" : "Please fill all the fields"}`}
+          className={`text-2xl rounded transition-all duration-500 px-11 py-4 ${
+            isFormValid()
+              ? "bg-gray-800 text-gray-100 hover:bg-black"
+              : "bg-gray-400 text-gray-300 cursor-not-allowed"
+          }`}
         >
           Checkout
         </button>

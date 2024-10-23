@@ -2,9 +2,9 @@
 import React, { useState } from "react";
 import { Search, ShoppingBag, X, Menu } from "lucide-react";
 import Image from "next/image";
-import main_logo from "../assets/main_logo.png";
+import main_logo from "../assets/goldvisionlogo.png";
+import yalidine_logo from "../assets/yalidine-logo.png";
 import Link from "next/link";
-
 export const Header = ({}) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -13,8 +13,8 @@ export const Header = ({}) => {
   const toggleSearch = () => setIsSearchOpen(!isSearchOpen);
   const handleSearchChange = (e) => setSearchBarValue(e.target.value);
   return (
-    <header className="bg-white border-b border-gray-200">
-      <div
+    <header className="bg-white border-b border-gray-200 lg:px-72 md:px-14 px-4 ">
+      {/* <div
         className={`fixed left-0 right-0 bg-white shadow-md transition-all duration-300 ease-in-out z-50 ${
           isSearchOpen ? "top-0" : "-top-24"
         }`}
@@ -35,11 +35,11 @@ export const Header = ({}) => {
             <X size={24} />
           </button>
         </div>
-      </div>
+      </div> */}
 
       <div className="hidden md:flex items-center justify-between p-4">
-        <div className="flex items-center space-x-8">
-          <Link href={"/"} alt="home">
+        <div className="flex items-center space-x-8 uppercase">
+          <Link href={"/"} alt="home" onClick={toggleMenu}>
             <Image src={main_logo} alt="logo" width={100} />
           </Link>
           <nav>
@@ -51,7 +51,7 @@ export const Header = ({}) => {
               </li>
               <li>
                 <Link
-                  href="/collections/pullover-hoodies"
+                  href="/collections/hoodies"
                   className="text-gray-600 hover:text-black"
                 >
                   HOODIES
@@ -86,12 +86,14 @@ export const Header = ({}) => {
         </div>
 
         <div className="flex items-center space-x-4">
-          <button onClick={toggleSearch} className="text-gray-600">
+          {/* <button onClick={toggleSearch} className="text-gray-600">
             <Search />
-          </button>
+          </button> */}
           <Link href={"/cart"}>
             <ShoppingBag className="text-gray-600" />
           </Link>
+          <h1>🇩🇿</h1>
+          <Image src={yalidine_logo} alt="logo" width={150} />
         </div>
       </div>
 
@@ -106,9 +108,9 @@ export const Header = ({}) => {
             </div>
           </Link>
           <div className="flex items-center space-x-7">
-            <button onClick={toggleSearch} className="text-gray-600">
+            {/* <button onClick={toggleSearch} className="text-gray-600">
               <Search />
-            </button>
+            </button> */}
             <Link href={"/cart"}>
               <ShoppingBag className="text-gray-600" />
             </Link>
@@ -120,7 +122,11 @@ export const Header = ({}) => {
             <nav className="text-center">
               <ul className="space-y-6">
                 <li>
-                  <Link href="/" className="block text-2xl text-gray-800">
+                  <Link
+                    href="/"
+                    className="block text-2xl text-gray-800"
+                    onClick={toggleMenu}
+                  >
                     Home
                   </Link>
                 </li>
@@ -128,6 +134,7 @@ export const Header = ({}) => {
                   <Link
                     href="/collections/pullover-hoodies"
                     className="block text-2xl text-gray-800"
+                    onClick={toggleMenu}
                   >
                     HOODIES
                   </Link>
@@ -136,6 +143,7 @@ export const Header = ({}) => {
                   <Link
                     href="/collections/pants"
                     className="block text-2xl text-gray-800"
+                    onClick={toggleMenu}
                   >
                     PANTS
                   </Link>
@@ -144,6 +152,7 @@ export const Header = ({}) => {
                   <Link
                     href="/collections/shorts"
                     className="block text-2xl text-gray-800"
+                    onClick={toggleMenu}
                   >
                     SHORTS
                   </Link>
@@ -152,6 +161,7 @@ export const Header = ({}) => {
                   <Link
                     href="/contact"
                     className="block text-2xl text-gray-800"
+                    onClick={toggleMenu}
                   >
                     Contact
                   </Link>

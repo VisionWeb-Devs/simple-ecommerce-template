@@ -1,5 +1,5 @@
 "use client";
-import { ShoppingCart } from "lucide-react";
+import { LucideImageOff, ShoppingCart } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
@@ -13,13 +13,20 @@ const ProductCard = ({ product }) => {
     >
       <Link href={`/products/${product.productURL}`}>
         <div className="relative">
-          <Image
-            src={product.main_image}
-            alt={product.name}
-            height={300}
-            width={300}
-            className="w-full h-[300px] object-cover transition-transform duration-500 ease-in-out hover:scale-110"
-          />
+          {product.main_image ? (
+            <Image
+              src={product.main_image}
+              alt={name}
+              width={300}
+              height={300}
+              className="w-full h-80 object-cover transition-transform duration-500 ease-in-out hover:scale-105 p-3"
+            />
+          ) : (
+            <div className="w-full h-80 flex justify-center items-center bg-gray-50 flex-col object-cover">
+              <LucideImageOff size={40} />
+              <h1 className="font-semibold">Images not found</h1>
+            </div>
+          )}
           {product.sale && (
             <span className="absolute top-2 left-2 bg-gray-800 text-white text-xs font-bold px-3 py-1 rounded-full">
               Sale

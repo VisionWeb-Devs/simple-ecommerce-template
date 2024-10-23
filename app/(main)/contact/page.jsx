@@ -23,7 +23,7 @@ const ContactForm = () => {
   };
 
   return (
-    <div className="w-full mx-auto mt-10  h-[calc(100vh-373px)] items-center flex flex-col ">
+    <div className="w-full  mx-auto mt-10  h-[calc(100vh-373px)] items-center flex flex-col ">
       <h1 className="text-3xl font-bold mb-20">Contact</h1>
       <form className="space-y-4 w-1/2" onSubmit={handleSubmit}>
         <div className="grid grid-cols-1  lg:grid-cols-2 gap-4 ">
@@ -61,12 +61,14 @@ const ContactForm = () => {
           value={formData.comment}
           onChange={handleChange}
         ></textarea>
-        <button
-          type="submit"
-          className="bg-black text-white py-2 px-4 hover:bg-gray-800 transition-colors"
-        >
-          Send
-        </button>
+        <div className="flex w-full justify-center items-center">
+          <button
+            type="submit"
+            className="bg-black text-white text-lg py-2 px-32 hover:bg-gray-800 transition-colors"
+          >
+            Send
+          </button>
+        </div>
       </form>
     </div>
   );

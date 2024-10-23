@@ -4,7 +4,8 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 export async function POST(request) {
   const { product_id, quantity, product_size, userId, product_variation } =
     await request.json();
-
+  console.log(product_id, quantity, product_size, userId, product_variation);
+  console.log(userId);
   const docRef = doc(db, "cart", userId);
   const docSnap = await getDoc(docRef);
   if (!docSnap.exists()) {

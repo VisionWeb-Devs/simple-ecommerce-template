@@ -8,7 +8,7 @@ export default function ProductImages({ images, productName }) {
   const handleImageClick = (image) => {
     setCurrentImage(image);
   };
-
+  console.log("hello curannt", currentImage);
   return (
     <div className="md:w-1/2 justify-center items-center flex flex-col">
       <div className="w-full justify-center items-center flex mb-4">
