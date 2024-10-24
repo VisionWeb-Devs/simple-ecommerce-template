@@ -1,9 +1,9 @@
 import { Collection } from "@/components/home/collections/collection/Collection";
 
-const collections = ["All Products", "Shirts", "Pants", "Hoodies"];
+const collections = ["all", "Shirts", "Pants", "Hoodies"];
 
 export default function Page({ params }) {
-  const collectionName = params.collection || "All Products";
+  const collectionName = params.collection || "all";
   if (
     !collections.some(
       (collection) =>
