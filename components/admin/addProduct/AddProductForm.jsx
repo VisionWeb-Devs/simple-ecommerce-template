@@ -152,7 +152,7 @@ const AddProductForm = ({
           name="price"
           placeholder={"Product price here"}
           className="border-[1px] border-[#E5E5E5] rounded-[4px] px-[16px] py-[8px] text-[16px]"
-          value={productData.price}
+          value={productData.price || 0}
           onChange={(e) => {
             setProductData((prev) => ({
               ...prev,

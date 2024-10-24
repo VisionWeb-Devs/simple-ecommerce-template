@@ -70,7 +70,10 @@ const Page = () => {
               description: data.product.description,
               price: data.product.price,
               salePrice: data.product.salePrice,
-              productCategory: data.product.productCategory,
+              productCategory:
+                data.product.productCategory.charAt(0).toUpperCase() +
+                data.product.productCategory.slice(1).toLowerCase(),
+
               productURL: data.product.productURL,
               available: data.product.available,
               variations: data.product.variations,
