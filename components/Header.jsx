@@ -111,6 +111,7 @@ export const Header = ({}) => {
             {/* <button onClick={toggleSearch} className="text-gray-600">
               <Search />
             </button> */}
+            <h1>🇩🇿</h1>
             <Link href={"/cart"}>
               <ShoppingBag className="text-gray-600" />
             </Link>

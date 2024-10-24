@@ -1,16 +1,16 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import React from "react";
-import shorts from "@/assets/shorts.png";
+import shirts from "@/assets/shirts.png";
 import hoodies from "@/assets/hoodies.png";
 import jeans from "@/assets/baggyjeans.png";
 import zipuphoodie from "@/assets/zipuphoodie.png";
 
 const collections = [
   {
-    name: "Shorts",
-    image: shorts.src,
-    link: "collections/shorts",
+    name: "Shirts",
+    image: shirts.src,
+    link: "collections/shirts",
   },
   {
     name: "HOODIES!",

@@ -7,9 +7,11 @@ import {
   ChevronDown,
   ChevronUp,
   Menu,
+  LucideX,
 } from "lucide-react";
-import logo from "./../../assets/main_logo.png";
+import logo from "./../../assets/goldvisionlogo.png";
 import { usePathname, useRouter } from "next/navigation";
+import Image from "next/image";
 
 const CategoryList = ({ categories }) => {
   return (
@@ -30,7 +32,7 @@ const CategoryList = ({ categories }) => {
   );
 };
 
-const SidebarItem = ({ icon, text, link }) => {
+const SidebarItem = ({ icon, text, link, onMenuClose }) => {
   const path = usePathname();
   const isActive = path === link;
   const activeLink = "bg-main text-white";
@@ -41,6 +43,7 @@ const SidebarItem = ({ icon, text, link }) => {
     <div
       onClick={() => {
         router.push(link);
+        onMenuClose();
       }}
       className={`flex items-center mx-[24px] px-4 py-3 font-semibold text-[15px] ${
         isActive ? activeLink : inactiveLink
@@ -60,8 +63,6 @@ const AdminNavigation = () => {
     { name: "Category 2", count: 32 },
     { name: "Category 3", count: 13 },
     { name: "Category 4", count: 14 },
-    { name: "Category 5", count: 6 },
-    { name: "Category 6", count: 11 },
   ];
 
   function handleToggleCategory() {
@@ -76,18 +77,28 @@ const AdminNavigation = () => {
     <div className=" ">
       <button
         onClick={handleToggleMenu}
-        className="lg:hidden top-6 left-4  p-2 bg-white rounded-md shadow-md"
+        className={`lg:hidden top-6 left-4  p-2 bg-white rounded-md shadow-md ${
+          isMenuOpen ? "hidden" : "fixed"
+        }  `}
       >
         <Menu size={24} />
       </button>
       <div
-        className={`w-72 lg:w-[250px] h-screen bg-white border-r border-gray-200 overflow-y-auto transition-transform duration-300 ease-in-out ${
+        className={`w-72 lg:w-[260px] h-screen bg-white border-r border-gray-200 overflow-y-auto transition-transform duration-300 ease-in-out ${
           isMenuOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0  top-0 left-0 `}
       >
+        <button
+          onClick={handleToggleMenu}
+          className={`lg:hidden top-6 left-4  p-2 bg-white rounded-md shadow-md ${
+            !isMenuOpen ? "hidden" : "fixed"
+          }  `}
+        >
+          <LucideX size={24} />
+        </button>
         <div className="px-4 pt-4 flex justify-center items-center w-[60%] mx-auto">
-          <img
-            src={logo.src}
+          <Image
+            src={logo}
             alt="Site Logo"
             className="mb-8 object-cover select-none "
           />
@@ -98,16 +109,19 @@ const AdminNavigation = () => {
             icon={<Home size={20} />}
             text="DASHBOARD"
             link="/admin"
+            onMenuClose={handleToggleMenu}
           />
           <SidebarItem
             icon={<Package size={20} />}
             text="ALL PRODUCTS"
             link="/admin/products"
+            onMenuClose={handleToggleMenu}
           />
           <SidebarItem
             icon={<FileText size={20} />}
             text="ORDER LIST"
             link="/admin/orders"
+            onMenuClose={handleToggleMenu}
           />
         </nav>
         <div>
