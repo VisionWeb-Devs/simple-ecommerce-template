@@ -1,5 +1,5 @@
 "use client";
-import { LucideImageOff, ShoppingCart } from "lucide-react";
+import { ArrowRight, LucideImageOff } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
@@ -40,7 +40,7 @@ const ProductCard = ({ product }) => {
 
           <div className="flex items-center justify-between">
             <div>
-              <span className="font-bold text-2xl text-black">
+              <span className="font-bold md:text-2xl text-xl text-black">
                 {product.price} DZD
               </span>
               {(product.salePrice || product.salePrice > 0) && (
@@ -54,7 +54,7 @@ const ProductCard = ({ product }) => {
               whileTap={{ scale: 0.9 }}
               className="bg-gray-700 text-white p-2 rounded-full hover:bg-black transition-colors duration-300"
             >
-              <ShoppingCart size={20} />
+              <ArrowRight size={20} />
             </motion.button>
           </div>
         </div>

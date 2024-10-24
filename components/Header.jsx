@@ -67,10 +67,10 @@ export const Header = ({}) => {
               </li>
               <li>
                 <Link
-                  href="/collections/shorts"
+                  href="/collections/shirts"
                   className="text-gray-600 hover:text-black"
                 >
-                  SHORTS
+                  SHIRTS
                 </Link>
               </li>
               <li>
@@ -100,7 +100,7 @@ export const Header = ({}) => {
       <div className="md:hidden">
         <div className="flex justify-between items-center p-4">
           <button onClick={toggleMenu} className="text-gray-600 z-50">
-            {isMenuOpen ? <X /> : <Menu />}
+            {isMenuOpen ? <X className="fixed" /> : <Menu />}
           </button>
           <Link href={"/"} alt="home">
             <div className="cursor-pointer">
@@ -133,7 +133,7 @@ export const Header = ({}) => {
                 </li>
                 <li>
                   <Link
-                    href="/collections/pullover-hoodies"
+                    href="/collections/hoodies"
                     className="block text-2xl text-gray-800"
                     onClick={toggleMenu}
                   >
@@ -151,11 +151,11 @@ export const Header = ({}) => {
                 </li>
                 <li>
                   <Link
-                    href="/collections/shorts"
+                    href="/collections/shirts"
                     className="block text-2xl text-gray-800"
                     onClick={toggleMenu}
                   >
-                    SHORTS
+                    SHIRTS
                   </Link>
                 </li>
                 <li>

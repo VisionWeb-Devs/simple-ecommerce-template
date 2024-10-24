@@ -11,12 +11,12 @@ export const TopSelling = async () => {
     <div className="bg-gray-100 py-16">
       <div className="container mx-auto lg:px-28 md:px-14 px-9">
         <div className="flex items-center justify-between mb-12">
-          <h2 className="text-4xl font-bold text-gray-800">
+          <h2 className="md:text-4xl text-2xl font-bold text-gray-800">
             Top Selling Items
           </h2>
           <Link
             href="/collections"
-            className="text-gray-700 text-lg hover:text-black transition-colors duration-300"
+            className="text-gray-700 md:text-lg text-sm hover:text-black transition-colors duration-300"
           >
             View All Items &rarr;
           </Link>
