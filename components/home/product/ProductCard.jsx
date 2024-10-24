@@ -41,11 +41,11 @@ const ProductCard = ({ product }) => {
           <div className="flex items-center justify-between">
             <div>
               <span className="font-bold md:text-2xl text-xl text-black">
-                {product.price} DZD
+                {product.salePrice} DZD
               </span>
               {(product.salePrice || product.salePrice > 0) && (
                 <span className="text-lg line-through text-gray-500 ml-2">
-                  {product.salePrice} DZD
+                  {product.price} DZD
                 </span>
               )}
             </div>

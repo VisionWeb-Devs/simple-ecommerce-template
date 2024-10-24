@@ -57,7 +57,9 @@ const ProductWrapper = ({ productData }) => {
           )} */}
           <div className="flex items-center justify-between">
             <div>
-              <span className="font-bold text-xl text-black">{price} DZD</span>
+              <span className="font-bold text-xl text-black">
+                {salePrice} DZD
+              </span>
               {(salePrice || salePrice > 0) && (
                 <span className="text-sm line-through text-gray-500 ml-2">
                   {price} DZD
