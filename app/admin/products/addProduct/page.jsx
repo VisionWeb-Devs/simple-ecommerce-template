@@ -17,6 +17,7 @@ const product_types = [
       { value: "XL", label: "XL" },
     ],
   },
+
   {
     name: "Pants",
     choices: [
@@ -28,6 +29,7 @@ const product_types = [
     ],
   },
 ];
+const product_categories = ["Shirts", "Pants", "Hoodies"];
 
 const Page = () => {
   const productURL = useSearchParams().get("productURL");
@@ -39,6 +41,7 @@ const Page = () => {
     price: 0.0,
     salePrice: 0.0,
     available: false,
+    productCategory: "",
     variations: [
       {
         variationName: "",
@@ -67,6 +70,7 @@ const Page = () => {
               description: data.product.description,
               price: data.product.price,
               salePrice: data.product.salePrice,
+              productCategory: data.product.productCategory,
               productURL: data.product.productURL,
               available: data.product.available,
               variations: data.product.variations,
@@ -92,7 +96,7 @@ const Page = () => {
   const [images, setImages] = useState([]);
 
   return (
-    <div className="bg-white">
+    <div className="bg-white p-5">
       <div className="flex flex-col gap-2 font-semibold mb-6">
         <h1 className="text-2xl md:text-3xl">Add new Product</h1>
         <p className="text-sm md:text-base">
@@ -106,6 +110,7 @@ const Page = () => {
             productData={productData}
             setProductData={setProductData}
             product_types={product_types}
+            product_categories={product_categories}
             loading={loading}
             setLoading={setLoading}
           />

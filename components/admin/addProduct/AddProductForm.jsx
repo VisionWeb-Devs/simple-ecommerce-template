@@ -16,6 +16,7 @@ const AddProductForm = ({
   productData,
   setProductData,
   product_types,
+  product_categories,
   loading,
   setLoading,
 }) => {
@@ -38,6 +39,25 @@ const AddProductForm = ({
       }
       setLoading(false);
     });
+  };
+
+  const handleDeleteProduct = async (productID) => {
+    setLoading(true);
+    await fetch("/api/deleteProduct", {
+      method: "POST",
+      body: JSON.stringify({ productID: productID }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status === 200) {
+          alert(data.message);
+          router.push("/admin/products");
+        } else {
+          alert(data.message);
+        }
+      })
+      .catch((err) => console.log(err))
+      .finally(() => setLoading(false));
   };
   return (
     <form
@@ -101,6 +121,27 @@ const AddProductForm = ({
         setProductData={setProductData}
         product_types={product_types}
       />
+      <select
+        name={`product_category`}
+        className="border border-gray-300 rounded px-3 py-2 text-sm w-full sm:w-auto"
+        value={productData.productCategory}
+        defaultValue={""}
+        onChange={(e) => {
+          setProductData((prev) => ({
+            ...prev,
+            productCategory: e.target.value,
+          }));
+        }}
+      >
+        <option key={"default"} value={""}>
+          Select a category
+        </option>
+        {product_categories.map((type) => (
+          <option key={type} value={type}>
+            {type}
+          </option>
+        ))}
+      </select>
       <div className="flex flex-col gap-[10px]">
         <label htmlFor="price" className="text-[20px] font-semibold">
           Product Price
@@ -163,21 +204,22 @@ const AddProductForm = ({
           </label>
         </div>
       </div>
-
-      <button
-        type="submit"
-        className="bg-main text-white w-fit px-[16px] py-[8px] disabled:opacity-75 disabled:cursor-not-allowed"
-        disabled={
-          loading
-          // ||
-          // images.some(
-          //   (image) =>
-          //     image.status == "uploading..." || image.status == "changing..."
-          // )
-        }
-      >
-        Confirm product
-      </button>
+      <div className="flex gap-5">
+        <div
+          className="bg-red-600 text-white w-fit px-[16px] py-[8px] cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed"
+          onClick={() => handleDeleteProduct(productData.productID)}
+          disabled={loading}
+        >
+          Delete product
+        </div>
+        <button
+          type="submit"
+          className="bg-main text-white w-fit px-[16px] py-[8px] disabled:opacity-75 disabled:cursor-not-allowed"
+          disabled={loading}
+        >
+          Confirm product
+        </button>
+      </div>
     </form>
   );
 };

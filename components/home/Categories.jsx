@@ -48,7 +48,7 @@ const CategoryCard = ({ category }) => (
 export const Categories = () => {
   return (
     <div className="container mx-auto lg:px-28 md:px-14 px-9 py-8 ">
-      <h2 className="text-3xl font-bold  mb-8 pl-10">
+      <h2 className="md:text-3xl text-2xl  font-bold  mb-8 pl-10">
         That&apos;s not all, SHOP MORE BELOW
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

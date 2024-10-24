@@ -72,9 +72,8 @@ const AdminNavigation = () => {
   function handleToggleMenu() {
     setIsMenuOpen(!isMenuOpen);
   }
-  console.log("hello");
   return (
-    <div className=" ">
+    <div className="h-full">
       <button
         onClick={handleToggleMenu}
         className={`lg:hidden top-6 left-4  p-2 bg-white rounded-md shadow-md ${
@@ -138,7 +137,7 @@ const AdminNavigation = () => {
             className={
               toggleCategory
                 ? "hidden"
-                : "flex px-4 py-3 font-semibold text-[17px]"
+                : "flex px-4 py-3 font-semibold text-[17px] h-full"
             }
           >
             <CategoryList categories={categories} />
