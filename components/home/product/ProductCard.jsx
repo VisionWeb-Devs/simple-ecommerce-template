@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 const ProductCard = ({ product }) => {
+  console.log(product);
   return (
     <motion.div
       whileHover={{ y: -10 }}
@@ -40,12 +41,12 @@ const ProductCard = ({ product }) => {
 
           <div className="flex items-center justify-between">
             <div>
-              <span className="font-bold text-lg text-black">
-                {product.price}
+              <span className="font-bold text-2xl text-black">
+                {product.price} DZD
               </span>
-              {product.originalPrice && (
-                <span className="text-sm line-through text-gray-500 ml-2">
-                  {product.originalPrice}
+              {(product.salePrice || product.salePrice > 0) && (
+                <span className="text-lg line-through text-gray-500 ml-2">
+                  {product.salePrice} DZD
                 </span>
               )}
             </div>

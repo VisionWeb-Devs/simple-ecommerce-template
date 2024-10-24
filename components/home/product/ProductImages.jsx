@@ -8,17 +8,17 @@ export default function ProductImages({ images, productName }) {
   const handleImageClick = (image) => {
     setCurrentImage(image);
   };
-  console.log("hello curannt", currentImage);
+
   return (
     <div className="md:w-1/2 justify-center items-center flex flex-col">
-      <div className="w-full justify-center items-center flex mb-4">
+      <div className="w-full justify-center items-center flex mb-4 ">
         {currentImage ? (
           <Image
             src={currentImage.webContentLink}
             alt={productName}
-            width={600}
+            width={1000}
             height={600}
-            className="w-[60%] h-[710px] object-cover"
+            className="md:w-[60%] w-full h-[350px] md:h-[610px] object-cover"
             priority
           />
         ) : (
@@ -28,7 +28,7 @@ export default function ProductImages({ images, productName }) {
           </div>
         )}
       </div>
-      <div className="flex gap-4 overflow-x-auto w-full justify-center items-center">
+      <div className="flex gap-4 overflow-x-auto w-full justify-center items-center border-b ">
         {images.images &&
           images.images.map((image, index) => (
             <Image
@@ -37,7 +37,7 @@ export default function ProductImages({ images, productName }) {
               alt={`${productName} - Image ${index + 1}`}
               width={100}
               height={100}
-              className="w-[100px] h-[100px] flex-shrink-0 object-cover cursor-pointer"
+              className="w-[100px] h-[100px] flex-shrink object-cover cursor-pointer"
               onClick={() => handleImageClick(image)}
             />
           ))}
