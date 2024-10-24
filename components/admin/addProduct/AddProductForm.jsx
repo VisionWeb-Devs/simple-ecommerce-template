@@ -16,6 +16,7 @@ const AddProductForm = ({
   productData,
   setProductData,
   product_types,
+  product_categories,
   loading,
   setLoading,
 }) => {
@@ -120,6 +121,27 @@ const AddProductForm = ({
         setProductData={setProductData}
         product_types={product_types}
       />
+      <select
+        name={`product_category`}
+        className="border border-gray-300 rounded px-3 py-2 text-sm w-full sm:w-auto"
+        value={productData.productCategory}
+        defaultValue={""}
+        onChange={(e) => {
+          setProductData((prev) => ({
+            ...prev,
+            productCategory: e.target.value,
+          }));
+        }}
+      >
+        <option key={"default"} value={""}>
+          Select a category
+        </option>
+        {product_categories.map((type) => (
+          <option key={type} value={type}>
+            {type}
+          </option>
+        ))}
+      </select>
       <div className="flex flex-col gap-[10px]">
         <label htmlFor="price" className="text-[20px] font-semibold">
           Product Price
