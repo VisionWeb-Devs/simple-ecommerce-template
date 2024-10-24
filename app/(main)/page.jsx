@@ -4,7 +4,7 @@ import { TopSelling } from "@/components/home/TopSelling";
 
 export default async function Home() {
   return (
-    <div>
+    <div className="bg-gray-100 ">
       <Hero />
       <TopSelling />
       <Categories />

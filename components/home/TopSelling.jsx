@@ -4,7 +4,6 @@ import Link from "next/link";
 import { getTopSelling } from "@/lib/firebase";
 import ProductCard from "./product/ProductCard";
 import { getImages } from "@/lib/googleDriveAdmin";
-// import ProductCard from "./ProductCard";
 
 export const TopSelling = async () => {
   const products = await getTopSelling();

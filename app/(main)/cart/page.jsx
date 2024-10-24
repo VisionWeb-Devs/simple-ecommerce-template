@@ -4,9 +4,7 @@ import { Trash2 } from "lucide-react";
 import Link from "next/link";
 import { getCartItems } from "@/lib/googleDriveAdmin";
 import { getUserCookie } from "@/lib/actions";
-import { getAdminProduct, getCheckout } from "@/lib/firebase";
 import Image from "next/image";
-import { set } from "zod";
 
 const CartItem = ({
   productURL,
@@ -18,9 +16,11 @@ const CartItem = ({
   name,
   onQuantityChange,
   onRemove,
+  product_variation,
   disabled,
 }) => {
   if (!product_id) return null;
+
   return (
     <div className="flex flex-col sm:flex-row items-center py-4 border-b">
       {main_image && (
@@ -38,6 +38,7 @@ const CartItem = ({
         </Link>
         <p className="text-gray-600">DA {price.toFixed(2)}</p>
         <p className="text-sm text-gray-500">Size: {size}</p>
+        <p className="text-sm text-gray-500">Color: {product_variation}</p>
       </div>
       <div className="flex items-center border mb-4 sm:mb-0">
         <button
@@ -79,6 +80,7 @@ const ShoppingCart = () => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
   useEffect(() => {
     const fetchCartItems = async () => {
       const userId = await getUserCookie();
@@ -92,6 +94,7 @@ const ShoppingCart = () => {
     setLoading(true);
     setError("");
     const userId = await getUserCookie();
+    console.log(product);
     const res = await fetch("/api/updateCartItem", {
       method: "POST",
       headers: {
@@ -105,11 +108,13 @@ const ShoppingCart = () => {
         product_variation: product.product_variation,
       }),
     }).then((res) => res.json());
+
     if (res.message !== "updateCartItem") {
       setLoading(false);
       setError(res.message);
       return;
     }
+
     if (newQuantity === 0) {
       const updatedCartItems = cartItems.filter(
         (item) =>
@@ -119,6 +124,7 @@ const ShoppingCart = () => {
       setLoading(false);
       return;
     }
+
     const updatedCartItems = cartItems.map((item) =>
       item.product_url + item.product_size + item.product_variation === id
         ? { ...item, quantity: newQuantity }
@@ -127,6 +133,7 @@ const ShoppingCart = () => {
     setCartItems(updatedCartItems);
     setLoading(false);
   };
+
   return (
     <div className="max-w-5xl mx-auto p-4">
       <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
@@ -134,6 +141,7 @@ const ShoppingCart = () => {
           Your cart
         </h2>
       </div>
+
       {cartItems.length !== 0 && (
         <div className="mb-4">
           <div className="hidden sm:flex justify-between text-sm text-gray-600 mb-2">
@@ -143,49 +151,48 @@ const ShoppingCart = () => {
               <span>TOTAL</span>
             </div>
           </div>
-          {cartItems.length !== 0 &&
-            cartItems.map((item) => (
-              <CartItem
-                key={
-                  item.product_url + item.product_size + item.product_variation
-                }
-                productURL={item.product_url}
-                quantity={item.quantity}
-                size={item.product_size}
-                product_id={item.product_id}
-                main_image={item.main_image}
-                price={item.price}
-                name={item.name}
-                onQuantityChange={(newQuantity) =>
-                  handleQuantityChange(
-                    item.product_url +
-                      item.product_size +
-                      item.product_variation,
-                    newQuantity,
-                    item
-                  )
-                }
-                onRemove={() => {
-                  handleQuantityChange(
-                    item.product_url +
-                      item.product_size +
-                      item.product_variation,
-                    0,
-                    item
-                  );
-                }}
-                disabled={loading}
-              />
-            ))}
+          {cartItems.map((item) => (
+            <CartItem
+              key={
+                item.product_url + item.product_size + item.product_variation
+              }
+              productURL={item.product_url}
+              quantity={item.quantity}
+              size={item.product_size}
+              product_id={item.product_id}
+              main_image={item.main_image}
+              price={item.price}
+              name={item.name}
+              product_variation={item.product_variation}
+              onQuantityChange={(newQuantity) =>
+                handleQuantityChange(
+                  item.product_url + item.product_size + item.product_variation,
+                  newQuantity,
+                  item
+                )
+              }
+              onRemove={() =>
+                handleQuantityChange(
+                  item.product_url + item.product_size + item.product_variation,
+                  0,
+                  item
+                )
+              }
+              disabled={loading}
+            />
+          ))}
         </div>
       )}
+
       {cartItems.length === 0 && <p className="text-xl">Your cart is empty</p>}
+
       {error && <p className="text-red-500">{error}</p>}
+
       <div className="text-right space-y-5 mt-5">
         {cartItems.length !== 0 && (
           <p className="font-semibold">
             Estimated total:{" "}
-            {cartItems?.reduce(
+            {cartItems.reduce(
               (total, product) =>
                 total + product.price * Number(product.quantity),
               0

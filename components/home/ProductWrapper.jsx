@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Star, ShoppingCart, LucideImageOff } from "lucide-react";
+import { Star, ShoppingCart, LucideImageOff, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -69,7 +69,7 @@ const ProductWrapper = ({ productData }) => {
               whileTap={{ scale: 0.9 }}
               className="bg-gray-700 text-white p-2 rounded-full hover:bg-black transition-colors duration-300"
             >
-              <ShoppingCart size={20} />
+              <ArrowRight size={20} />
             </motion.button>
           </div>
         </div>

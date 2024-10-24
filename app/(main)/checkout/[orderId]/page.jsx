@@ -20,8 +20,10 @@ const OrderConfirmationPage = ({ params }) => {
     };
     fetchOrderDetails();
   }, []);
+
   if (error) return <div>{error}</div>;
   if (orderDetails.length === 0) return <div>Loading...</div>;
+  console.log(orderDetails);
   return (
     <div className="container mx-auto px-4 py-16">
       <div className="text-center mb-8">
@@ -29,7 +31,7 @@ const OrderConfirmationPage = ({ params }) => {
           Thank you. Your order has been received.
         </p>
         <div className="border border-green-300 rounded-lg p-4 inline-block mt-4">
-          <div className="grid grid-cols-4 gap-4 text-md">
+          <div className="grid md:grid-cols-4 grid-cols-2  gap-4 text-md">
             <div>
               <p className="font-semibold">Order number:</p>
               <p>{orderDetails.order_id}</p>
@@ -67,6 +69,10 @@ const OrderConfirmationPage = ({ params }) => {
                   <br />
                   <span className="text-sm text-gray-600">
                     Size: {product.size}
+                  </span>
+                  <br />
+                  <span className="text-sm text-gray-600">
+                    Variation: {product.product_variation}
                   </span>
                 </td>
                 <td className="text-right py-2">{product.total} DZD</td>

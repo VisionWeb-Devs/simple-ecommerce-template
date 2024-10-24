@@ -1,30 +1,30 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import React from "react";
-
+import shorts from "@/assets/shorts.png";
+import hoodies from "@/assets/hoodies.png";
+import jeans from "@/assets/baggyjeans.png";
+import zipuphoodie from "@/assets/zipuphoodie.png";
+import Image from "next/image";
 const categories = [
   {
     name: "Shorts",
-    image:
-      "https://sitoclothings.shop/cdn/shop/collections/IMG_1531.jpg?v=1720159438&width=535",
+    image: shorts.src,
     link: "collections/shorts",
   },
   {
-    name: "ZIP UP HOODIES!",
-    image:
-      "https://sitoclothings.shop/cdn/shop/collections/IMG_4308.jpg?v=1720159246&width=535",
+    name: "HOODIES!",
+    image: hoodies.src,
+    link: "collections/hoodies",
+  },
+  {
+    name: "Zip-Up Hoodies",
+    image: zipuphoodie.src,
     link: "collections/zip-up-hoodies",
   },
   {
-    name: "Pullover Hoodies",
-    image:
-      "https://sitoclothings.shop/cdn/shop/collections/IMG_2682-removebg-preview_3.png?v=1720159210",
-    link: "collections/pullover-hoodies",
-  },
-  {
     name: "Pants",
-    image:
-      "https://sitoclothings.shop/cdn/shop/collections/s243461973942501215_c4_i1_w2775.jpg?v=1720159098&width=535",
+    image: jeans.src,
     link: "collections/pants",
   },
 ];
@@ -33,8 +33,10 @@ const CategoryCard = ({ category }) => (
   <Link href={category.link}>
     <div className="group cursor-pointer p-4 ">
       <div className="relative overflow-hidden">
-        <img
+        <Image
           src={category.image}
+          width={350}
+          height={350}
           alt={category.name}
           className="w-full h-[350px] object-cover transition-transform duration-500 group-hover:scale-105"
         />
@@ -49,7 +51,7 @@ const CategoryCard = ({ category }) => (
 
 export const Categories = () => {
   return (
-    <div className="container mx-auto lg:px-28 md:px-14 px-9 py-8">
+    <div className="container mx-auto lg:px-28 md:px-14 px-9 py-8 ">
       <h2 className="text-3xl font-bold  mb-8 pl-10">
         That&apos;s not all, SHOP MORE BELOW
       </h2>
