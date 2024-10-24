@@ -92,7 +92,7 @@ const Page = () => {
   const [images, setImages] = useState([]);
 
   return (
-    <div className="bg-white">
+    <div className="bg-white p-5">
       <div className="flex flex-col gap-2 font-semibold mb-6">
         <h1 className="text-2xl md:text-3xl">Add new Product</h1>
         <p className="text-sm md:text-base">

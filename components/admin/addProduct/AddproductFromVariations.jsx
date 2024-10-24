@@ -53,7 +53,7 @@ const AddproductFromVariations = ({
               name={`variationsNames`}
               placeholder="Variation name"
               className="border border-gray-700 bg-black text-white text-center rounded px-3 py-2 text-sm w-full sm:w-auto"
-              value={variation.variationName}
+              value={variation.variationName || ""}
               onChange={(e) => {
                 const newVariations = productData.variations.map((v, i) =>
                   i === index ? { ...v, variationName: e.target.value } : v
@@ -149,7 +149,7 @@ const AddproductFromVariations = ({
                     type="text"
                     placeholder="Quantity"
                     className="border border-gray-300 rounded px-3 py-2 text-sm w-full sm:w-auto"
-                    value={size.quantity}
+                    value={size.quantity || ""}
                     onChange={(e) => {
                       const newVariations = productData.variations.map(
                         (v, vIndex) => {
