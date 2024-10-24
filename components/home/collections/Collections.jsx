@@ -4,7 +4,6 @@ import React from "react";
 import shirts from "@/assets/shirts.png";
 import hoodies from "@/assets/hoodies.png";
 import jeans from "@/assets/baggyjeans.png";
-import zipuphoodie from "@/assets/zipuphoodie.png";
 
 const collections = [
   {
@@ -17,11 +16,7 @@ const collections = [
     image: hoodies.src,
     link: "collections/hoodies",
   },
-  {
-    name: "Zip-Up Hoodies",
-    image: zipuphoodie.src,
-    link: "collections/zip-up-hoodies",
-  },
+
   {
     name: "Pants",
     image: jeans.src,

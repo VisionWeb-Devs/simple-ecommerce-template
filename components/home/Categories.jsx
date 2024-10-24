@@ -10,18 +10,14 @@ const categories = [
   {
     name: "Shirts",
     image: shirts.src,
-    link: "collections/shorts",
+    link: "collections/shirts",
   },
   {
     name: "HOODIES!",
     image: hoodies.src,
     link: "collections/hoodies",
   },
-  {
-    name: "Zip-Up Hoodies",
-    image: zipuphoodie.src,
-    link: "collections/zip-up-hoodies",
-  },
+
   {
     name: "Pants",
     image: jeans.src,

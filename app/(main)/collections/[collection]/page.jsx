@@ -4,7 +4,7 @@ export default function Page({ params }) {
   const collectionName = params.collection || "All Products";
 
   return (
-    <div className="bg-gray-100 flex flex-col flex-grow w-full lg:px-28 md:px-14 px-9 pt-4">
+    <div className="bg-gray-100 flex flex-col flex-grow w-full lg:px-28 md:px-14 px-9 pt-4 h-full">
       <h2 className="text-4xl font-bold text-gray-800 uppercase flex w-full lg:px-48 md:px-14 px-9 pt-4">
         {collectionName}
       </h2>
