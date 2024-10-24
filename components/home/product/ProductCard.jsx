@@ -41,7 +41,7 @@ const ProductCard = ({ product }) => {
           <div className="flex items-center justify-between">
             <div>
               <span className="font-bold md:text-2xl text-xl text-black">
-                {product.salePrice} DZD
+                {product.salePrice > 0 ? product.salePrice : product.price} DZD
               </span>
               {(product.salePrice || product.salePrice > 0) && (
                 <span className="text-lg line-through text-gray-500 ml-2">
