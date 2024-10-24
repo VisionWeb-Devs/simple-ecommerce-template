@@ -19,7 +19,10 @@ const createOrderStructure = (userInfos, cartItems, userId) => {
       ? selectedProvince.shipping_price
       : 0;
   return {
-    order_id: nanoid(),
+    order_id: `ORD-${new Date()
+      .toISOString()
+      .slice(0, 10)
+      .replace(/-/g, "")}-${nanoid(5).toLocaleUpperCase()}`,
     userId: userId,
     user: {
       firstname: userInfos.firstName,

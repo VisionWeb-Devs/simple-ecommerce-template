@@ -149,7 +149,7 @@ const AddproductFromVariations = ({
                     type="text"
                     placeholder="Quantity"
                     className="border border-gray-300 rounded px-3 py-2 text-sm w-full sm:w-auto"
-                    value={size.quantity || ""}
+                    value={size.quantity || 0}
                     onChange={(e) => {
                       const newVariations = productData.variations.map(
                         (v, vIndex) => {
