@@ -1,6 +1,5 @@
 import React from "react";
 import { CirclePlus, LucideImageOff, ExternalLink, Edit2 } from "lucide-react";
-import { getAdminProducts } from "@/lib/firebase";
 import { getImages } from "@/lib/googleDriveAdmin";
 import Image from "next/image";
 import Link from "next/link";
@@ -75,9 +74,16 @@ const ProductCard = ({
 );
 
 const ProductGrid = async () => {
-  const res = await getAdminProducts();
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/getAdminProducts`,
+    {
+      cache: "no-store",
+    }
+  ).then((res) => res.json());
+  const unformatedProducts = res.body;
+
   const products = await Promise.all(
-    res.map(async (product) => {
+    unformatedProducts.map(async (product) => {
       const images = await getImages(product.productID);
       return {
         ...product,

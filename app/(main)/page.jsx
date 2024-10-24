@@ -1,12 +1,12 @@
 import { Categories } from "@/components/home/Categories";
 import Hero from "@/components/home/Hero";
-import { TopSelling } from "@/components/home/TopSelling";
+import LatestItems from "@/components/home/LatestItems";
 
 export default async function Home() {
   return (
     <div className="bg-gray-100 ">
       <Hero />
-      <TopSelling />
+      <LatestItems />
       <Categories />
     </div>
   );
