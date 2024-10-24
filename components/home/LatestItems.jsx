@@ -1,12 +1,18 @@
-import React from "react";
-
 import Link from "next/link";
-import { getTopSelling } from "@/lib/firebase";
 import ProductCard from "./product/ProductCard";
 import { getImages } from "@/lib/googleDriveAdmin";
 
-export const TopSelling = async () => {
-  const products = await getTopSelling();
+export const LatestItems = async () => {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/getLatestProducts`,
+    {
+      cache: "no-store",
+    }
+  );
+  const { body } = await res.json();
+  const products = body;
+  if (!products) return <div>No products To display.</div>;
+
   return (
     <div className="bg-gray-100 py-16">
       <div className="container mx-auto lg:px-28 md:px-14 px-9">
@@ -22,7 +28,7 @@ export const TopSelling = async () => {
           </Link>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {products.map(async (product) => {
+          {products?.map(async (product) => {
             const images = await getImages(product.productID);
             const image = images.main_image?.webContentLink;
             return (
@@ -38,4 +44,4 @@ export const TopSelling = async () => {
   );
 };
 
-export default TopSelling;
+export default LatestItems;
