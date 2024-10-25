@@ -2,7 +2,7 @@ import Link from "next/link";
 import React from "react";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import hero_image from "@/assets/heroImage.jpg";
+import hero_image from "@/assets/heroimage.jpg";
 
 const Hero = () => {
   return (

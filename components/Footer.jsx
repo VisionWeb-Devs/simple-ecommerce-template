@@ -7,7 +7,7 @@ import Link from "next/link";
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
   return (
-    <footer className="bg-black text-white py-4 px-4 sm:px-6 md:px-8 lg:px-20 w-full">
+    <footer className="bg-black text-white pb-4 px-4 sm:px-6 md:px-8 lg:px-20 w-full ">
       <div className="mx-auto flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
         <div className="flex items-center space-x-4 text-sm sm:text-base">
           <p>©{currentYear} Online Store</p>
