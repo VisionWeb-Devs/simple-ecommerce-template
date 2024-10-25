@@ -1,4 +1,4 @@
-import React from "react";
+"use server";
 import { CirclePlus, LucideImageOff, ExternalLink, Edit2 } from "lucide-react";
 import { getImages } from "@/lib/googleDriveAdmin";
 import Image from "next/image";
