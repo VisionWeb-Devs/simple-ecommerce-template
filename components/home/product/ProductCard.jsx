@@ -1,11 +1,16 @@
 "use client";
 import { ArrowRight, LucideImageOff } from "lucide-react";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 
 const ProductCard = ({ product }) => {
   return (
-    <div className="bg-white rounded-lg shadow-lg overflow-hidden relative transform transition-transform duration-300 hover:-translate-y-2">
+    <motion.div
+      whileHover={{ y: -10 }}
+      transition={{ duration: 0.3 }}
+      className="bg-white rounded-lg shadow-lg overflow-hidden relative"
+    >
       <Link href={`/products/${product.productURL}`}>
         <div className="relative">
           {product.main_image ? (
@@ -44,14 +49,17 @@ const ProductCard = ({ product }) => {
                 </span>
               )}
             </div>
-            <button className="bg-gray-700 text-white p-2 rounded-full hover:bg-black transition-all duration-300 transform hover:scale-110 active:scale-90">
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="bg-gray-700 text-white p-2 rounded-full hover:bg-black transition-colors duration-300"
+            >
               <ArrowRight size={20} />
-            </button>
+            </motion.button>
           </div>
         </div>
       </Link>
-    </div>
+    </motion.div>
   );
 };
-
 export default ProductCard;
