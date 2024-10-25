@@ -3,6 +3,7 @@ import ProductCard from "./product/ProductCard";
 import { getImages } from "@/lib/googleDriveAdmin";
 
 export const LatestItems = async () => {
+  console.log("hello im here", process.env.NEXT_PUBLIC_API_URL);
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/getLatestProducts`,
     {
@@ -21,7 +22,7 @@ export const LatestItems = async () => {
             Top Selling Items
           </h2>
           <Link
-            href="/collections"
+            href="/products"
             className="text-gray-700 md:text-lg text-sm hover:text-black transition-colors duration-300"
           >
             View All Items &rarr;

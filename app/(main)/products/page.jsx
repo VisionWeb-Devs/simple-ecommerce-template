@@ -1,6 +1,3 @@
-import { redirect } from "next/navigation";
-
 export default function Page() {
-  redirect("/collections");
-  return null;
+  return <div>Hello World!</div>;
 }

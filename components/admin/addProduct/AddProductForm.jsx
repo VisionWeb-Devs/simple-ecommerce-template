@@ -121,7 +121,11 @@ const AddProductForm = ({
         setProductData={setProductData}
         product_types={product_types}
       />
+      <label htmlFor="roduct_category" className="text-[20px] font-semibold">
+        Category
+      </label>
       <select
+        id="product_category"
         name={`product_category`}
         className="border border-gray-300 rounded px-3 py-2 text-sm w-full sm:w-auto"
         value={productData.productCategory}
