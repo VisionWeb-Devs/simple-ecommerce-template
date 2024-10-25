@@ -2,7 +2,7 @@ import Link from "next/link";
 import React from "react";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import hero_image from "../../assets/heroImage4.jpg";
+import hero_image from "@/assets/heroImage.jpg";
 
 const Hero = () => {
   return (
@@ -11,7 +11,7 @@ const Hero = () => {
         <Image
           src={hero_image}
           alt="hero"
-          width={1000}
+          width={1920}
           height={1080}
           className="w-full h-full"
         />
