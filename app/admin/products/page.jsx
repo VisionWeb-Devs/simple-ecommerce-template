@@ -44,14 +44,16 @@ const ProductCard = ({
 
       <div className="space-y-3">
         <div className="flex justify-between items-start">
-          <h3 className="font-semibold text-lg line-clamp-2">{name}</h3>
+          <h3 className="font-semibold text-lg line-clamp-2 uppercase">
+            {name}
+          </h3>
         </div>
 
         <div className="flex items-center gap-2">
           <p className="text-2xl font-bold text-main">
-            {salePrice === 0 ? price : salePrice}DA
+            {salePrice > 0 ? salePrice : price} DZD
           </p>
-          {salePrice !== 0 && (
+          {(salePrice || salePrice > 0) && (
             <p className="text-sm text-gray-500 line-through">{price}DA</p>
           )}
         </div>

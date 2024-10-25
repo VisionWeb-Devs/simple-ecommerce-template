@@ -3,12 +3,22 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: "https", // Use 'http' if needed
+        protocol: "https",
         hostname: "drive.google.com",
-        port: "", // Leave empty for default ports
-        pathname: "/**", // Allows all paths or specify more restrictive paths as needed
+        port: "",
+        pathname: "/**",
       },
     ],
+  },
+  webpack: (config) => {
+    config.module.rules.push({
+      test: /\.(mp4|webm)$/,
+      type: "asset/resource",
+      generator: {
+        filename: "static/media/[name].[hash][ext]",
+      },
+    });
+    return config;
   },
 };
 

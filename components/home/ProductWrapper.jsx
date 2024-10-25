@@ -37,7 +37,7 @@ const ProductWrapper = ({ productData }) => {
           )}
         </div>
         <div className="p-6">
-          <h3 className="text-lg font-semibold mb-2 truncate">{name}</h3>
+          <h3 className="text-lg font-semibold mb-2  uppercase">{name}</h3>
           {/* {rating !== undefined && (
             <div className="flex items-center mb-2">
               {[...Array(5)].map((_, i) => (
