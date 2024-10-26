@@ -20,220 +20,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 
-const orders = [
-  {
-    id: "#25426",
-    date: "Nov 8th, 2023",
-    customer: "Kavin",
-    status: "Delivered",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25425",
-    date: "Nov 7th, 2023",
-    customer: "Kamal",
-    status: "Canceled",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25426",
-    date: "Nov 8th, 2023",
-    customer: "Kavin",
-    status: "Delivered",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25425",
-    date: "Nov 7th, 2023",
-    customer: "Kamal",
-    status: "Canceled",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25426",
-    date: "Nov 8th, 2023",
-    customer: "Kavin",
-    status: "Delivered",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25425",
-    date: "Nov 7th, 2023",
-    customer: "Kamal",
-    status: "Canceled",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25426",
-    date: "Nov 8th, 2023",
-    customer: "Kavin",
-    status: "Delivered",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25425",
-    date: "Nov 7th, 2023",
-    customer: "Kamal",
-    status: "Canceled",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25426",
-    date: "Nov 8th, 2023",
-    customer: "Kavin",
-    status: "Delivered",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25425",
-    date: "Nov 7th, 2023",
-    customer: "Kamal",
-    status: "Canceled",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25426",
-    date: "Nov 8th, 2023",
-    customer: "Kavin",
-    status: "Delivered",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25425",
-    date: "Nov 7th, 2023",
-    customer: "Kamal",
-    status: "Canceled",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25426",
-    date: "Nov 8th, 2023",
-    customer: "Kavin",
-    status: "Delivered",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25425",
-    date: "Nov 7th, 2023",
-    customer: "Kamal",
-    status: "Canceled",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25426",
-    date: "Nov 8th, 2023",
-    customer: "Kavin",
-    status: "Returned",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25425",
-    date: "Nov 7th, 2023",
-    customer: "Kamal",
-    status: "Canceled",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25426",
-    date: "Nov 8th, 2023",
-    customer: "Kavin",
-    status: "Delivered",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25425",
-    date: "Nov 7th, 2023",
-    customer: "Kamal",
-    status: "Canceled",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25426",
-    date: "Nov 8th, 2023",
-    customer: "Kavin",
-    status: "Delivered",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25425",
-    date: "Nov 7th, 2023",
-    customer: "Kamal",
-    status: "Canceled",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25426",
-    date: "Nov 8th, 2023",
-    customer: "Kavin",
-    status: "Delivered",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25425",
-    date: "Nov 7th, 2023",
-    customer: "Kamal",
-    status: "Processing",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25426",
-    date: "Nov 8th, 2023",
-    customer: "Kavin",
-    status: "Processing",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25425",
-    date: "Nov 7th, 2023",
-    customer: "Kamal",
-    status: "Canceled",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25426",
-    date: "Nov 8th, 2023",
-    customer: "Kavin",
-    status: "Processing",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25425",
-    date: "Nov 7th, 2023",
-    customer: "Kamal",
-    status: "Returned",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25426",
-    date: "Nov 8th, 2023",
-    customer: "Kavin",
-    status: "Processing",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25425",
-    date: "Nov 7th, 2023",
-    customer: "Kamal",
-    status: "Canceled",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25426",
-    date: "Nov 8th, 2023",
-    customer: "Kavin",
-    status: "Processing",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25425",
-    date: "Nov 7th, 2023",
-    customer: "Kamal",
-    status: "Canceled",
-    amount: "200.00DA",
-    created_at: "2024-10-23T17:58:48.163Z",
-  },
-];
 const statusConfig = {
   Delivered: {
     color: "bg-green-100 text-green-700",
@@ -254,40 +47,49 @@ const statusConfig = {
 };
 
 const OrdersList = () => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [selectedStatus, setSelectedStatus] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [ordersPerPage] = useState(15);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const fetchOrders = async () => {
+    setLoading(true);
+    const lastOrder = searchParams.get("lastOrder") || null;
+    const products = await fetch("/api/getOrders", {
+      method: "POST",
+      body: JSON.stringify({
+        lastOrder: lastOrder,
+        pageSize: ordersPerPage,
+      }),
+    })
+      .then((res) => res.json())
+      .catch((err) => setLoading(false));
+    console.log(products);
+    setOrders([
+      ...products.orders.map((order) => ({
+        id: order.order_id,
+        date: order.created_at,
+        customer: order.user.firstname + " " + order.user.lastname,
+        status: order.order_status,
+        amount: order.order_total,
+        wilaya: provinces.filter(
+          (prov) => prov.code === order.user.address.wilaya
+        )[0].name,
+      })),
+    ]);
+    setLoading(false);
+  };
   useEffect(() => {
-    const fetchOrders = async () => {
-      const products = await fetch("/api/getOrders", {
-        method: "POST",
-        body: JSON.stringify({
-          lastOrder: orders.length !== 0 ? orders[orders.length - 1].date : "",
-          pageSize: ordersPerPage,
-        }),
-      })
-        .then((res) => res.json())
-        .catch((err) => setLoading(false));
-      console.log(products);
-      setOrders([
-        ...orders,
-        ...products.orders.map((order) => ({
-          id: order.order_id,
-          date: order.created_at,
-          customer: order.user.firstname + " " + order.user.lastname,
-          status: order.order_status,
-          amount: order.order_total,
-          wilaya: provinces.filter(
-            (prov) => prov.code === order.user.address.wilaya
-          )[0].name,
-        })),
-      ]);
-      setLoading(false);
-    };
+    // Fetch orders whenever the search parameters change
     fetchOrders();
-  }, []);
+  }, [searchParams.toString()]);
+
+  const handleGetNextPage = async () => {
+    if (orders.length === 0) return;
+    router.push(`/admin/orders?lastOrder=${orders[orders.length - 1].date}`);
+  };
 
   const filteredOrders =
     selectedStatus === "All"
@@ -391,27 +193,22 @@ const OrdersList = () => {
               </div>
             )}
 
+            {!loading && orders.length === 0 && (
+              <div className="text-xl font-medium flex justify-center w-full py-10">
+                No Orders to display.
+              </div>
+            )}
+
             <div className="mt-4 flex items-center justify-end space-x-2">
               <div className="flex space-x-1">
-                {[...Array(totalPages).keys()].map((number) => (
-                  <Button
-                    key={number + 1}
-                    variant={currentPage === number + 1 ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => paginate(number + 1)}
-                  >
-                    {number + 1}
-                  </Button>
-                ))}
-                {currentPage < totalPages && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => paginate(currentPage + 1)}
-                  >
-                    Next
-                  </Button>
-                )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleGetNextPage()}
+                  disabled={orders.length === 0}
+                >
+                  Next
+                </Button>
               </div>
             </div>
           </CardContent>
