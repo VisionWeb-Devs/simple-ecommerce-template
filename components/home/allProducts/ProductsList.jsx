@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Search } from "lucide-react";
 import Link from "next/link";
-import { getAllProducts } from "@/lib/firebase";
 import ProductWrapper from "../ProductWrapper";
 
 const ProductsList = () => {
@@ -18,8 +17,10 @@ const ProductsList = () => {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        const fetchedProducts = await getAllProducts();
-        setProducts(fetchedProducts);
+        const fetchedProducts = await fetch(`/api/getAllProducts`).then((res) =>
+          res.json()
+        );
+        setProducts(fetchedProducts.products);
         setLoading(false);
       } catch (err) {
         setError("Failed to fetch products. Please try again later.");
@@ -43,7 +44,6 @@ const ProductsList = () => {
       })
     );
   }, [searchQuery, selectedCategory, products]);
-  console.log(products);
   const categories = ["hoodies", "shirts", "pants"];
 
   return (
