@@ -76,7 +76,7 @@ const AdminNavigation = () => {
     <div className="h-full">
       <button
         onClick={handleToggleMenu}
-        className={`lg:hidden top-6 left-4  p-2 bg-white rounded-md shadow-md ${
+        className={`lg:hidden top-0 left-0  p-2 bg-white rounded-md shadow-md ${
           isMenuOpen ? "hidden" : "fixed"
         }  `}
       >

@@ -1,5 +1,24 @@
 "use client";
 import React, { useState } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
 
 const orders = [
   {
@@ -216,22 +235,26 @@ const orders = [
 
 const OrdersList = () => {
   const [selectedStatus, setSelectedStatus] = useState("All");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [ordersPerPage] = useState(15);
 
-  const statusColors = {
-    Delivered: "text-green-500",
-    Canceled: "text-orange-900",
-    Processing: "text-blue-500",
-    Returned: "text-red-500",
-  };
-
-  const formatDate = (date) => {
-    if (!date) return "";
-    const options = { year: "numeric", month: "short", day: "numeric" };
-    return new Date(date).toLocaleDateString("en-US", options);
+  const statusConfig = {
+    Delivered: {
+      color: "bg-green-100 text-green-700",
+      icon: "⬤",
+    },
+    Canceled: {
+      color: "bg-orange-100 text-orange-700",
+      icon: "⬤",
+    },
+    Processing: {
+      color: "bg-blue-100 text-blue-700",
+      icon: "⬤",
+    },
+    Returned: {
+      color: "bg-red-100 text-red-700",
+      icon: "⬤",
+    },
   };
 
   const filteredOrders =
@@ -240,131 +263,117 @@ const OrdersList = () => {
       : orders.filter((order) => order.status === selectedStatus);
 
   const indexOfLastOrder = currentPage * ordersPerPage;
-  console.log("indexOfLastOrder", indexOfLastOrder);
   const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
-  console.log("indexOfFirstOrder", indexOfFirstOrder);
-
   const currentOrders = filteredOrders.slice(
     indexOfFirstOrder,
     indexOfLastOrder
   );
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-  console.log("filteredOrders.length ", filteredOrders.length);
   const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
 
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   return (
-    <div className="p-4 bg-gray-50 min-h-screen">
-      <div className="mb-6 flex justify-between">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-bold">Orders List</h1>
-          <p className="text-gray-600 text-sm sm:text-base">
-            Home &gt; Order List
-          </p>
+    <div className="p-6 bg-gray-50 min-h-screen">
+      <div className="max-w-7xl mx-auto">
+        <div className="mb-8 flex justify-between items-start">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Orders List</h1>
+            <p className="text-gray-500 mt-1">
+              Manage and track your order history
+            </p>
+          </div>
         </div>
-        <div className="flex items-center space-x-4 flex-col space-y-5">
-          <div className="flex w-full">
-            <div className="w-full gap-2 flex items-center justify-center flex-col">
-              <div className="flex gap-4 justify-center items-center">
-                <input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="bg-[#F9FAFB] font-semibold"
-                  style={{ appearance: "none" }}
-                />
-                <input
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className="bg-[#F9FAFB] font-semibold"
-                  style={{ appearance: "none" }}
-                />
-              </div>
-              <div className="text-xl font-semibold">
-                {startDate && endDate
-                  ? `${formatDate(startDate)} - ${formatDate(endDate)}`
-                  : "Please select a date range"}
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>Recent Orders</CardTitle>
+            <Select
+              value={selectedStatus}
+              onValueChange={(value) => setSelectedStatus(value)}
+            >
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Filter by status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All">All Status</SelectItem>
+                <SelectItem value="Delivered">Delivered</SelectItem>
+                <SelectItem value="Canceled">Canceled</SelectItem>
+                <SelectItem value="Processing">Processing</SelectItem>
+                <SelectItem value="Returned">Returned</SelectItem>
+              </SelectContent>
+            </Select>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-12">
+                    <Checkbox />
+                  </TableHead>
+                  <TableHead>Product</TableHead>
+                  <TableHead>Order ID</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Customer Name</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Amount</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {currentOrders.map((order, index) => (
+                  <TableRow key={index}>
+                    <TableCell>
+                      <Checkbox />
+                    </TableCell>
+                    <TableCell>Lorem Ipsum</TableCell>
+                    <TableCell className="font-medium">{order.id}</TableCell>
+                    <TableCell>{order.date}</TableCell>
+                    <TableCell>{order.customer}</TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="secondary"
+                        className={`${
+                          statusConfig[order.status].color
+                        } px-2 py-1`}
+                      >
+                        <span className="mr-1 text-xs">
+                          {statusConfig[order.status].icon}
+                        </span>
+                        {order.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="font-medium">
+                      {order.amount}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+
+            <div className="mt-4 flex items-center justify-end space-x-2">
+              <div className="flex space-x-1">
+                {[...Array(totalPages).keys()].map((number) => (
+                  <Button
+                    key={number + 1}
+                    variant={currentPage === number + 1 ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => paginate(number + 1)}
+                  >
+                    {number + 1}
+                  </Button>
+                ))}
+                {currentPage < totalPages && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => paginate(currentPage + 1)}
+                  >
+                    Next
+                  </Button>
+                )}
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-white shadow-md p-4">
-        <div className="flex justify-between items-center">
-          <h2 className="text-lg font-bold mb-4">Recent Purchases</h2>
-          <div className="flex items-center justify-between mb-6">
-            <select
-              className="bg-gray-200 p-2"
-              value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
-            >
-              <option value="All">All Status</option>
-              <option value="Delivered">Delivered</option>
-              <option value="Canceled">Canceled</option>
-              <option value="Processing">Processing</option>
-              <option value="Returned">Returned</option>
-            </select>
-          </div>
-        </div>
-        <table className="w-full text-left">
-          <thead>
-            <tr className="text-gray-500">
-              <th>
-                <input type="checkbox" />
-              </th>
-              <th>Product</th>
-              <th>Order ID</th>
-              <th>Date</th>
-              <th>Customer Name</th>
-              <th>Status</th>
-              <th>Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentOrders.map((order, index) => (
-              <tr key={index} className="border-b hover:bg-gray-50 ">
-                <td className="py-2">
-                  <input type="checkbox" />
-                </td>
-                <td className="py-2">Lorem Ipsum</td>
-                <td className="py-2">{order.id}</td>
-                <td className="py-2">{order.date}</td>
-                <td className="flex items-center">{order.customer}</td>
-                <td className="py-2">
-                  <span
-                    className={`${statusColors[order.status]} font-semibold`}
-                  >
-                    {order.status}
-                  </span>
-                </td>
-                <td className="py-2">{order.amount}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <div className="mt-4 flex items-center justify-end space-x-2">
-        {[...Array(totalPages).keys()].map((number) => (
-          <button
-            key={number + 1}
-            onClick={() => paginate(number + 1)}
-            className={`px-3 py-1 border ${
-              currentPage === number + 1 ? "bg-gray-200" : ""
-            }`}
-          >
-            {number + 1}
-          </button>
-        ))}
-        {currentPage < totalPages && (
-          <button
-            onClick={() => paginate(currentPage + 1)}
-            className="px-3 py-1 border"
-          >
-            Next
-          </button>
-        )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
