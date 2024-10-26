@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { UserRound, ShoppingBag, Truck } from "lucide-react";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 
 import {

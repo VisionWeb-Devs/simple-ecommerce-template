@@ -1,6 +1,6 @@
 import React from "react";
 import { Calendar, User, CreditCard, Activity } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Overview } from "@/components/admin/Overview";
 import { RecentSales } from "@/components/admin/RecentSales";
 
