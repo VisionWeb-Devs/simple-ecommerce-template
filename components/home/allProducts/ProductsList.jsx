@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Search } from "lucide-react";
 import Link from "next/link";
 import ProductWrapper from "../ProductWrapper";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 
 const ProductsList = () => {
   const [searchQuery, setSearchQuery] = useState("");
