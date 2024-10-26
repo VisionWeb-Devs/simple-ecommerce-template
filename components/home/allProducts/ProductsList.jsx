@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Search } from "lucide-react";
 import Link from "next/link";
 import ProductWrapper from "../ProductWrapper";
+import { Button } from "@/components/ui/button";
 
 const ProductsList = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -12,6 +13,9 @@ const ProductsList = () => {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const [itemsToShow, setItemsToShow] = useState(6);
+  const itemsPerPage = 8;
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -44,7 +48,14 @@ const ProductsList = () => {
       })
     );
   }, [searchQuery, selectedCategory, products]);
+
+  const currentProducts = filteredProducts.slice(0, itemsToShow);
+
   const categories = ["hoodies", "shirts", "pants"];
+
+  const handleViewMore = () => {
+    setItemsToShow((prev) => prev + itemsPerPage);
+  };
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -90,20 +101,20 @@ const ProductsList = () => {
           <p>Loading...</p>
         ) : error ? (
           <p>{error}</p>
-        ) : filteredProducts.length > 0 ? (
+        ) : currentProducts.length > 0 ? (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
           >
-            {filteredProducts.map((product) => (
+            {currentProducts.map((product) => (
               <motion.div
                 key={product.productID}
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.2 }}
               >
-                <ProductWrapper productData={product} />{" "}
+                <ProductWrapper productData={product} />
               </motion.div>
             ))}
           </motion.div>
@@ -117,6 +128,14 @@ const ProductsList = () => {
               Go To The Home Page
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
+          </div>
+        )}
+
+        {filteredProducts.length > itemsToShow && (
+          <div className="mt-4 flex items-center justify-center">
+            <Button variant="default" size="lg" onClick={handleViewMore}>
+              View More
+            </Button>
           </div>
         )}
       </div>
