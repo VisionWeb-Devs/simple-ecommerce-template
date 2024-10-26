@@ -1,28 +1,43 @@
-import React from "react";
+"use client";
+import React, { useEffect } from "react";
 import { Home, UserRound, ShoppingBag, Truck } from "lucide-react";
-const page = () => {
-  const orderData = {
-    orderId: "#1",
-    customer: {
-      name: "Drake OVO",
-      email: "drakessnake@gmail.com",
-      phone: "+213 123456789",
-    },
-    orderInfo: {
-      shipping: "AliExpress",
-      paymentMethod: "Payment a livraison",
-      status: "Pending",
-    },
-    address: "Beni Aziz Setif",
-    DeliveryPrice: 900,
-    discount: 0,
-    products: [
-      { name: "1", orderId: "#25421", quantity: 2, total: 5400 },
-      { name: "2", orderId: "#25421", quantity: 3, total: 3600 },
-      { name: "3", orderId: "#25421", quantity: 2, total: 2800 },
-      { name: "4", orderId: "#25421", quantity: 6, total: 1500 },
-    ],
-  };
+const orderData = {
+  orderId: "#1",
+  customer: {
+    name: "Drake OVO",
+    email: "drakessnake@gmail.com",
+    phone: "+213 123456789",
+  },
+  orderInfo: {
+    shipping: "AliExpress",
+    paymentMethod: "Payment a livraison",
+    status: "Pending",
+  },
+  address: "Beni Aziz Setif",
+  DeliveryPrice: 900,
+  discount: 0,
+  products: [
+    { name: "1", orderId: "#25421", quantity: 2, total: 5400 },
+    { name: "2", orderId: "#25421", quantity: 3, total: 3600 },
+    { name: "3", orderId: "#25421", quantity: 2, total: 2800 },
+    { name: "4", orderId: "#25421", quantity: 6, total: 1500 },
+  ],
+};
+const page = ({ params }) => {
+  const [fetchedOrder, setFetchedOrder] = React.useState(null);
+  useEffect(() => {
+    const fetchOrder = async () => {
+      const response = await fetch("/api/getOrderDetails", {
+        method: "POST",
+        body: JSON.stringify({ orderId: params.order }),
+      });
+      const data = await response.json();
+      setFetchedOrder(data.order);
+    };
+    fetchOrder();
+  }, []);
+  console.log("fetched order: ", fetchedOrder);
+
   const subtotal = orderData.products.reduce(
     (sum, product) => sum + product.total,
     0

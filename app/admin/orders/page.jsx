@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import provinces from "@/assets/Wilaya_Of_Algeria.json";
 import {
   Table,
   TableBody,
@@ -230,32 +231,63 @@ const orders = [
     customer: "Kamal",
     status: "Canceled",
     amount: "200.00DA",
+    created_at: "2024-10-23T17:58:48.163Z",
   },
 ];
+const statusConfig = {
+  Delivered: {
+    color: "bg-green-100 text-green-700",
+    icon: "⬤",
+  },
+  Canceled: {
+    color: "bg-orange-100 text-orange-700",
+    icon: "⬤",
+  },
+  Pending: {
+    color: "bg-blue-100 text-blue-700",
+    icon: "⬤",
+  },
+  Returned: {
+    color: "bg-red-100 text-red-700",
+    icon: "⬤",
+  },
+};
 
 const OrdersList = () => {
   const [selectedStatus, setSelectedStatus] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [ordersPerPage] = useState(15);
-
-  const statusConfig = {
-    Delivered: {
-      color: "bg-green-100 text-green-700",
-      icon: "⬤",
-    },
-    Canceled: {
-      color: "bg-orange-100 text-orange-700",
-      icon: "⬤",
-    },
-    Processing: {
-      color: "bg-blue-100 text-blue-700",
-      icon: "⬤",
-    },
-    Returned: {
-      color: "bg-red-100 text-red-700",
-      icon: "⬤",
-    },
-  };
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const fetchOrders = async () => {
+      const products = await fetch("/api/getOrders", {
+        method: "POST",
+        body: JSON.stringify({
+          lastOrder: orders.length !== 0 ? orders[orders.length - 1].date : "",
+          pageSize: ordersPerPage,
+        }),
+      })
+        .then((res) => res.json())
+        .catch((err) => setLoading(false));
+      console.log(products);
+      setOrders([
+        ...orders,
+        ...products.orders.map((order) => ({
+          id: order.order_id,
+          date: order.created_at,
+          customer: order.user.firstname + " " + order.user.lastname,
+          status: order.order_status,
+          amount: order.order_total,
+          wilaya: provinces.filter(
+            (prov) => prov.code === order.user.address.wilaya
+          )[0].name,
+        })),
+      ]);
+      setLoading(false);
+    };
+    fetchOrders();
+  }, []);
 
   const filteredOrders =
     selectedStatus === "All"
@@ -310,7 +342,7 @@ const OrdersList = () => {
                   <TableHead className="w-12">
                     <Checkbox />
                   </TableHead>
-                  <TableHead>Product</TableHead>
+                  <TableHead>Wilaya</TableHead>
                   <TableHead>Order ID</TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead>Customer Name</TableHead>
@@ -318,36 +350,46 @@ const OrdersList = () => {
                   <TableHead>Amount</TableHead>
                 </TableRow>
               </TableHeader>
-              <TableBody>
-                {currentOrders.map((order, index) => (
-                  <TableRow key={index}>
-                    <TableCell>
-                      <Checkbox />
-                    </TableCell>
-                    <TableCell>Lorem Ipsum</TableCell>
-                    <TableCell className="font-medium">{order.id}</TableCell>
-                    <TableCell>{order.date}</TableCell>
-                    <TableCell>{order.customer}</TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="secondary"
-                        className={`${
-                          statusConfig[order.status].color
-                        } px-2 py-1`}
-                      >
-                        <span className="mr-1 text-xs">
-                          {statusConfig[order.status].icon}
-                        </span>
-                        {order.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="font-medium">
-                      {order.amount}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
+
+              {!loading && (
+                <TableBody>
+                  {currentOrders.map((order, index) => (
+                    <TableRow key={index}>
+                      <TableCell>
+                        <Checkbox />
+                      </TableCell>
+                      <TableCell>{order.wilaya}</TableCell>
+                      <TableCell className="font-medium">{order.id}</TableCell>
+                      <TableCell>
+                        {new Date(order.date).toLocaleString()}
+                      </TableCell>
+                      <TableCell>{order.customer}</TableCell>
+                      <TableCell>
+                        <Badge
+                          variant="secondary"
+                          className={`${
+                            statusConfig[order.status].color
+                          } px-2 py-1`}
+                        >
+                          <span className="mr-1 text-xs">
+                            {statusConfig[order.status].icon}
+                          </span>
+                          {order.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        {order.amount} DZD
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              )}
             </Table>
+            {loading && (
+              <div className="text-xl font-medium flex justify-center w-full py-10">
+                Loading...
+              </div>
+            )}
 
             <div className="mt-4 flex items-center justify-end space-x-2">
               <div className="flex space-x-1">
