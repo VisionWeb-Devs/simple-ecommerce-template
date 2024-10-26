@@ -6,9 +6,10 @@ import { getCheckout } from "@/lib/firebase";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-const calculateSubtotal = (products) => {
+const calculateSubtotal = (products, shipping = 0) => {
   return products.reduce(
-    (total, product) => total + product.price * Number(product.quantity),
+    (total, product) =>
+      total + product.price * Number(product.quantity) + shipping,
     0
   );
 };
@@ -48,7 +49,7 @@ const CheckoutPage = () => {
     setOrderSummary((prevSummary) => ({
       ...prevSummary,
       subtotal: products ? calculateSubtotal(products) : 0,
-      total: products ? calculateSubtotal(products) : 0,
+      total: products ? calculateSubtotal(products, prevSummary.shipping) : 0,
     }));
   }, [products]);
 

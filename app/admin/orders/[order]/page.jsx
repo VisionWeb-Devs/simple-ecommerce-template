@@ -19,6 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/Table";
+import Link from "next/link";
 
 const Page = ({ params }) => {
   const [fetchedOrder, setFetchedOrder] = useState(null);
@@ -35,6 +36,9 @@ const Page = ({ params }) => {
     },
     Returned: {
       color: "bg-orange-100 text-orange-700",
+    },
+    Processing: {
+      color: "bg-gray-100 text-gray-700",
     },
   };
 
@@ -113,6 +117,7 @@ const Page = ({ params }) => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Pending">Pending</SelectItem>
+                  <SelectItem value="Processing">Processing</SelectItem>
                   <SelectItem value="Delivered">Delivered</SelectItem>
                   <SelectItem value="Canceled">Canceled</SelectItem>
                   <SelectItem value="Returned">Returned</SelectItem>
@@ -194,17 +199,26 @@ const Page = ({ params }) => {
                   <TableHead>Size</TableHead>
                   <TableHead>Quantity</TableHead>
                   <TableHead>Total</TableHead>
+                  <TableHead>Quantity in Stock</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {fetchedOrder.order_items.map((product, index) => (
                   <TableRow key={index}>
-                    <TableCell>{product.product_name}</TableCell>
+                    <TableCell>
+                      <Link
+                        href={`/products/${product.product_url}`}
+                        target="_blank"
+                      >
+                        {product.product_name}
+                      </Link>
+                    </TableCell>
                     <TableCell>{product.product_url}</TableCell>
                     <TableCell>{product.product_variation || "N/A"}</TableCell>
                     <TableCell>{product.size || "N/A"}</TableCell>
                     <TableCell>{product.quantity}</TableCell>
                     <TableCell>{product.total.toFixed(2)}DA</TableCell>
+                    <TableCell>5 </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
