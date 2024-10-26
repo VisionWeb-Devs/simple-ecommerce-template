@@ -8,35 +8,24 @@ import { Button } from "@/components/ui/button";
 
 export const Collection = async ({ collectionName }) => {
   const [products, setProducts] = useState([]);
-  const [displayedProducts, setDisplayedProducts] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const itemsPerPage = 4;
+  const [displayCount, setDisplayCount] = useState(4);
+  const [hasMore, setHasMore] = useState(true);
 
   useEffect(() => {
     const fetchProducts = async () => {
       const allProducts = await getCategoriesProducts(collectionName);
       setProducts(allProducts);
-      setDisplayedProducts(allProducts.slice(0, itemsPerPage));
+      setHasMore(allProducts.length > displayCount);
     };
+
     fetchProducts();
   }, [collectionName]);
 
-  const handleViewMore = async () => {
-    if (loading) return;
-
-    setLoading(true);
-    const newDisplayedProducts = products.slice(
-      0,
-      displayedProducts.length + itemsPerPage
-    );
-
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    setDisplayedProducts(newDisplayedProducts);
-    setLoading(false);
+  const handleLoadMore = () => {
+    setDisplayCount((prevCount) => prevCount + 4);
   };
 
-  if (displayedProducts.length === 0) {
+  if (products.length === 0)
     return (
       <div className="flex-col h-[70vh] justify-center items-center w-full py-16 mx-auto lg:px-28 md:px-14 px-9 flex space-y-7">
         <h1 className="text-3xl font-medium">
@@ -53,29 +42,24 @@ export const Collection = async ({ collectionName }) => {
         </div>
       </div>
     );
-  }
 
   return (
     <div className="bg-gray-100 py-16 flex-grow">
       <div className="container mx-auto lg:px-28 md:px-14 px-9">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {displayedProducts.map((product) => (
+          {products.slice(0, displayCount).map((product) => (
             <ProductCard key={product.name} {...product} />
           ))}
         </div>
+
+        {hasMore && (
+          <div className="flex justify-center mt-8">
+            <Button variant="default" size="lg" onClick={handleLoadMore}>
+              View More
+            </Button>
+          </div>
+        )}
       </div>
-      {displayedProducts.length < products.length && (
-        <div className="mt-4 flex items-center justify-center">
-          <Button
-            variant="default"
-            size="lg"
-            onClick={handleViewMore}
-            disabled={loading}
-          >
-            {loading ? "Loading..." : "View More"}
-          </Button>
-        </div>
-      )}
     </div>
   );
 };
