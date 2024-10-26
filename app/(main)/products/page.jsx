@@ -1,3 +1,7 @@
-export default function Page() {
-  return <div>Hello World!</div>;
-}
+import ProductsList from "@/components/home/allProducts/ProductsList";
+import React from "react";
+const AllProductsPage = () => {
+  return <ProductsList />;
+};
+
+export default AllProductsPage;

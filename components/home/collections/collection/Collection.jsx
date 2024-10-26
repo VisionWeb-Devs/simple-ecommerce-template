@@ -6,6 +6,7 @@ import { ArrowRight } from "lucide-react";
 
 export const Collection = async ({ collectionName }) => {
   const products = await getCategoriesProducts(collectionName);
+  console.log(products);
   if (products.length === 0)
     return (
       <div className="flex-col h-[70vh] justify-center items-center w-full py-16 mx-auto lg:px-28 md:px-14 px-9 flex space-y-7">
