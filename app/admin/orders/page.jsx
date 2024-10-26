@@ -20,220 +20,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
+import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 
-const orders = [
-  {
-    id: "#25426",
-    date: "Nov 8th, 2023",
-    customer: "Kavin",
-    status: "Delivered",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25425",
-    date: "Nov 7th, 2023",
-    customer: "Kamal",
-    status: "Canceled",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25426",
-    date: "Nov 8th, 2023",
-    customer: "Kavin",
-    status: "Delivered",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25425",
-    date: "Nov 7th, 2023",
-    customer: "Kamal",
-    status: "Canceled",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25426",
-    date: "Nov 8th, 2023",
-    customer: "Kavin",
-    status: "Delivered",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25425",
-    date: "Nov 7th, 2023",
-    customer: "Kamal",
-    status: "Canceled",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25426",
-    date: "Nov 8th, 2023",
-    customer: "Kavin",
-    status: "Delivered",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25425",
-    date: "Nov 7th, 2023",
-    customer: "Kamal",
-    status: "Canceled",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25426",
-    date: "Nov 8th, 2023",
-    customer: "Kavin",
-    status: "Delivered",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25425",
-    date: "Nov 7th, 2023",
-    customer: "Kamal",
-    status: "Canceled",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25426",
-    date: "Nov 8th, 2023",
-    customer: "Kavin",
-    status: "Delivered",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25425",
-    date: "Nov 7th, 2023",
-    customer: "Kamal",
-    status: "Canceled",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25426",
-    date: "Nov 8th, 2023",
-    customer: "Kavin",
-    status: "Delivered",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25425",
-    date: "Nov 7th, 2023",
-    customer: "Kamal",
-    status: "Canceled",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25426",
-    date: "Nov 8th, 2023",
-    customer: "Kavin",
-    status: "Returned",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25425",
-    date: "Nov 7th, 2023",
-    customer: "Kamal",
-    status: "Canceled",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25426",
-    date: "Nov 8th, 2023",
-    customer: "Kavin",
-    status: "Delivered",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25425",
-    date: "Nov 7th, 2023",
-    customer: "Kamal",
-    status: "Canceled",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25426",
-    date: "Nov 8th, 2023",
-    customer: "Kavin",
-    status: "Delivered",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25425",
-    date: "Nov 7th, 2023",
-    customer: "Kamal",
-    status: "Canceled",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25426",
-    date: "Nov 8th, 2023",
-    customer: "Kavin",
-    status: "Delivered",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25425",
-    date: "Nov 7th, 2023",
-    customer: "Kamal",
-    status: "Processing",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25426",
-    date: "Nov 8th, 2023",
-    customer: "Kavin",
-    status: "Processing",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25425",
-    date: "Nov 7th, 2023",
-    customer: "Kamal",
-    status: "Canceled",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25426",
-    date: "Nov 8th, 2023",
-    customer: "Kavin",
-    status: "Processing",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25425",
-    date: "Nov 7th, 2023",
-    customer: "Kamal",
-    status: "Returned",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25426",
-    date: "Nov 8th, 2023",
-    customer: "Kavin",
-    status: "Processing",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25425",
-    date: "Nov 7th, 2023",
-    customer: "Kamal",
-    status: "Canceled",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25426",
-    date: "Nov 8th, 2023",
-    customer: "Kavin",
-    status: "Processing",
-    amount: "200.00DA",
-  },
-  {
-    id: "#25425",
-    date: "Nov 7th, 2023",
-    customer: "Kamal",
-    status: "Canceled",
-    amount: "200.00DA",
-    created_at: "2024-10-23T17:58:48.163Z",
-  },
-];
 const statusConfig = {
   Delivered: {
     color: "bg-green-100 text-green-700",
@@ -348,6 +137,7 @@ const OrdersList = () => {
                   <TableHead>Customer Name</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Amount</TableHead>
+                  <TableHead></TableHead>
                 </TableRow>
               </TableHeader>
 
@@ -379,6 +169,13 @@ const OrdersList = () => {
                       </TableCell>
                       <TableCell className="font-medium">
                         {order.amount} DZD
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        <Link href={`/admin/orders/${order.id}`}>
+                          <Button variant="outline" size="sm">
+                            <ArrowRightIcon className="w-4 h-4" />
+                          </Button>
+                        </Link>
                       </TableCell>
                     </TableRow>
                   ))}
