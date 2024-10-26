@@ -26,6 +26,8 @@ import {
   useRouter,
   useSearchParams,
 } from "next/navigation";
+import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
+import Link from "next/link";
 
 const statusConfig = {
   Delivered: {
@@ -40,6 +42,10 @@ const statusConfig = {
     color: "bg-blue-100 text-blue-700",
     icon: "⬤",
   },
+  Processing: {
+    color: "bg-yellow-100 text-yellow-700",
+    icon: "⬤",
+  },
   Returned: {
     color: "bg-red-100 text-red-700",
     icon: "⬤",
@@ -47,13 +53,12 @@ const statusConfig = {
 };
 
 const OrdersList = () => {
-  const searchParams = useSearchParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [selectedStatus, setSelectedStatus] = useState("All");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [ordersPerPage] = useState(15);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+
   const fetchOrders = async () => {
     setLoading(true);
     const lastOrder = searchParams.get("lastOrder") || null;
@@ -61,12 +66,11 @@ const OrdersList = () => {
       method: "POST",
       body: JSON.stringify({
         lastOrder: lastOrder,
-        pageSize: ordersPerPage,
+        pageSize: 15,
       }),
     })
       .then((res) => res.json())
       .catch((err) => setLoading(false));
-    console.log(products);
     setOrders([
       ...products.orders.map((order) => ({
         id: order.order_id,
@@ -82,7 +86,6 @@ const OrdersList = () => {
     setLoading(false);
   };
   useEffect(() => {
-    // Fetch orders whenever the search parameters change
     fetchOrders();
   }, [searchParams.toString()]);
 
@@ -90,21 +93,6 @@ const OrdersList = () => {
     if (orders.length === 0) return;
     router.push(`/admin/orders?lastOrder=${orders[orders.length - 1].date}`);
   };
-
-  const filteredOrders =
-    selectedStatus === "All"
-      ? orders
-      : orders.filter((order) => order.status === selectedStatus);
-
-  const indexOfLastOrder = currentPage * ordersPerPage;
-  const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
-  const currentOrders = filteredOrders.slice(
-    indexOfFirstOrder,
-    indexOfLastOrder
-  );
-  const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
-
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -130,9 +118,10 @@ const OrdersList = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="All">All Status</SelectItem>
+                <SelectItem value="Pending">Pending</SelectItem>
+                <SelectItem value="Processing">Processing</SelectItem>
                 <SelectItem value="Delivered">Delivered</SelectItem>
                 <SelectItem value="Canceled">Canceled</SelectItem>
-                <SelectItem value="Processing">Processing</SelectItem>
                 <SelectItem value="Returned">Returned</SelectItem>
               </SelectContent>
             </Select>
@@ -141,25 +130,26 @@ const OrdersList = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-12">
+                  {/* <TableHead className="w-12">
                     <Checkbox />
-                  </TableHead>
+                  </TableHead> */}
                   <TableHead>Wilaya</TableHead>
                   <TableHead>Order ID</TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead>Customer Name</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Amount</TableHead>
+                  {/* <TableHead></TableHead> */}
                 </TableRow>
               </TableHeader>
 
               {!loading && (
                 <TableBody>
-                  {currentOrders.map((order, index) => (
+                  {orders.map((order, index) => (
                     <TableRow key={index}>
-                      <TableCell>
+                      {/* <TableCell>
                         <Checkbox />
-                      </TableCell>
+                      </TableCell> */}
                       <TableCell>{order.wilaya}</TableCell>
                       <TableCell className="font-medium">{order.id}</TableCell>
                       <TableCell>
@@ -181,6 +171,13 @@ const OrdersList = () => {
                       </TableCell>
                       <TableCell className="font-medium">
                         {order.amount} DZD
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        <Link href={`/admin/orders/${order.id}`}>
+                          <Button variant="outline" size="sm">
+                            <ArrowRightIcon className="w-4 h-4" />
+                          </Button>
+                        </Link>
                       </TableCell>
                     </TableRow>
                   ))}
